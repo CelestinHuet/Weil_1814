@@ -1,0 +1,13 @@
+images/*
+json/*
+prompts/*
+prompts_mise_au_propre/*
+resultats/*
+resultats_mise_au_propre/*
+text/*
+*.gpkg
+*.json
+*.pdf
+*.txt
+*.png
+*.pyc
