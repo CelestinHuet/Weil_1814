@@ -1,0 +1,45 @@
+
+
+
+<head>
+  <!-- Importation des bibliothèques MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@^5.5.0/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@^5.5.0/dist/maplibre-gl.js"></script>
+
+  <!-- Importation des bibliothèques Carte Facile -->
+  <link href="https://unpkg.com/carte-facile@^0.7.1/dist/carte-facile.css" rel="stylesheet" />
+  <script src="https://unpkg.com/carte-facile@^0.7.1/dist/carte-facile.js"></script> 
+</head>
+
+
+<body>
+    <!-- Conteneur HTML qui accueillera la carte -->
+    <div id="map"></div>
+    <!-- Style CSS pour que la carte occupe tout l'espace disponible et avoir une couleur de fond. -->
+    <style>
+        html,body, #map { height:100%; width: 100%; margin:0 }
+        #map { background: #000120; }
+    </style>
+</body>
+
+
+
+
+
+<script>
+    // Création la carte
+    let map = new maplibregl.Map({
+        container: 'map', // id du conteneur de la carte
+        style: CarteFacile.mapStyles.simple, // style de carte
+        maxZoom: 18.9, // niveau de zoom maximum, adapté aux cartes utilisant les données IGN
+    });
+    const scale = new maplibregl.ScaleControl({
+      maxWidth: 80,
+      unit: 'imperial'
+    });
+    const nav = new maplibregl.NavigationControl();
+    map.addControl(nav, 'top-right');
+
+    map.addControl(scale);
+    CarteFacile.addOverlay(map, CarteFacile.Overlay.levelCurves);
+</script>
