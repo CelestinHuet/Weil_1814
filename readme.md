@@ -58,3 +58,8 @@ Exécuter les prompts
 TODO
 ```
 
+
+Insérer les lieux dans la base de données
+```
+python manage.py insert_lieux --file lieux.json
+```
