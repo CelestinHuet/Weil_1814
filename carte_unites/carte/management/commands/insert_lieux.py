@@ -15,4 +15,7 @@ class Command(BaseCommand):
             data = json.load(f)
         
         for lieu, value in data.items():
-            Lieu.objects.get_or_create(nom=lieu, latitude=value["lat"], longitude=value["lon"])
+            if value is None:
+                Lieu.objects.get_or_create(nom=lieu)
+            else:
+                Lieu.objects.get_or_create(nom=lieu, latitude=value["lat"], longitude=value["lon"])

@@ -14,8 +14,7 @@ def get_lieux():
         with open(os.path.join("resultats/gemini_2-5_dates", file), 'r') as f:
             data = json.load(f)
             for d in data["positions"]:
-                lieux_unite = d["lieu"].split(";")
-                lieux += lieux_unite
+                lieux.append(d["lieu"])
     return set(lieux)
 
 
@@ -25,38 +24,44 @@ lieux = get_lieux()
 # Résultats : dictionnaire {nom: {lat: ..., lon: ...}}
 resultats = {}
 points = []
+noms = []
 # Boucle sur les lieux
 for lieu in tqdm(lieux):
-    try:
+    liste_lieux = lieu.split(";")
+    lat = 0
+    lon = 0
+    compte = 0
+    for l in liste_lieux:
         # Requête à l'API Nominatim
         response = requests.get(
             'https://nominatim.openstreetmap.org/search',
             params={
-                'q': "bois des Forges",  # on précise France pour éviter les homonymes
+                'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
                 'limit': 15,
                 'countrycodes': 'fr,de,ch',  # France, Allemagne, Suisse
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )
-
         response.raise_for_status()
         data = response.json()
-        
         if data:
-            resultats[lieu] = {
-                'lat': data[0]['lat'],
-                'lon': data[0]['lon']
-            }
-            points.append(Point(data[0]['lon'], data[0]['lat']))
-        else:
-            resultats[lieu] = None  # Aucun résultat trouvé
+            lat += float(data[0]['lat'])
+            lon += float(data[0]['lon'])
+            compte += 1
+    
+    if compte != 0:
+        resultats[lieu] = {
+            'lat': lat/compte,
+            'lon': lon/compte
+        }
+        points.append(Point(lon/compte, lat/compte))
+        noms.append(lieu)
+    else:
+        resultats[lieu] = None  # Aucun résultat trouvé
+    time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
 
-        time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
 
-    except Exception as e:
-        print(f"Erreur pour le lieu '{lieu}': {e}")
-        resultats[lieu] = None
 
 # Sauvegarder les résultats dans un fichier JSON
 with open('coordonnees.json', 'w', encoding='utf-8') as f:
@@ -65,4 +70,4 @@ with open('coordonnees.json', 'w', encoding='utf-8') as f:
 print("Terminé. Coordonnées sauvegardées dans 'coordonnees.json'")
     
 
-gpd.GeoDataFrame({"geometry":points}).set_crs(epsg=4326).to_file("coordonnees.gpkg")
+gpd.GeoDataFrame({"lieu":noms, "geometry":points}).set_crs(epsg=4326).to_file("coordonnees.gpkg")

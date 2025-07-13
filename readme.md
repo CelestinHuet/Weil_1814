@@ -63,3 +63,8 @@ Insérer les lieux dans la base de données
 ```
 python manage.py insert_lieux --file lieux.json
 ```
+
+Insérer les unités dans la base de données
+```
+python manage.py insert_unites --directory resultats/gemini_2-5_dates
+```
