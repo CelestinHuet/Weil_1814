@@ -1,7 +1,10 @@
-
-
-
+<!DOCTYPE html>
+<html lang="fr">
 <head>
+  <meta charset="UTF-8">
+  <title>Carte des armées napoléoniennes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <!-- Importation des bibliothèques MapLibre GL JS -->
   <link href="https://unpkg.com/maplibre-gl@^5.5.0/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@^5.5.0/dist/maplibre-gl.js"></script>
@@ -9,24 +12,71 @@
   <!-- Importation des bibliothèques Carte Facile -->
   <link href="https://unpkg.com/carte-facile@^0.7.1/dist/carte-facile.css" rel="stylesheet" />
   <script src="https://unpkg.com/carte-facile@^0.7.1/dist/carte-facile.js"></script> 
+
+  <!-- Choices.js -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      background-color: #f3f4f6;
+      flex-wrap: wrap;
+    }
+
+    .controls form {
+      display: flex;
+      flex-direction: column;
+      margin: 0.5rem;
+    }
+
+    .controls label {
+      margin-bottom: 0.5rem;
+    }
+
+    #map {
+      height: 600px;
+      width: 100%;
+    }
+  </style>
 </head>
-
-
 <body>
-    <!-- Conteneur HTML qui accueillera la carte -->
-    <div id="map"></div>
-    <!-- Style CSS pour que la carte occupe tout l'espace disponible et avoir une couleur de fond. -->
-    <style>
-        html,body, #map { height:100%; width: 100%; margin:0 }
-        #map { background: #000120; }
-    </style>
-</body>
+  <header>
+    <h1>Carte des armées napoléoniennes (Déc 1813 - Avril 1814)</h1>
+  </header>
+
+  <section class="controls">
+    <form id="unitForm">
+      <label for="unitSelect">Sélectionner une unité :</label>
+      <select id="unitSelect"></select>
+    </form>
+
+    <form id="dateForm">
+      <label for="dateSelect">Sélectionner une date :</label>
+      <input type="date" id="dateSelect" min="1813-12-01" max="1814-04-30" value="1813-12-01">
+    </form>
+  </section>
+
+  <div id="map"></div>
 
 
 
-
-
-<script>
+  <script>
     // Création la carte
     let map = new maplibregl.Map({
         container: 'map', // id du conteneur de la carte
@@ -41,5 +91,113 @@
     map.addControl(nav, 'top-right');
 
     map.addControl(scale);
+    map.on('load', () => {
+      map.addSource('positions', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+      map.addLayer({
+        id: 'unit-points',
+        type: 'circle',
+        source: 'positions',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': '#1d4ed8',
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff'
+        }
+      });
+      map.addLayer({
+        id: 'unites-labels',
+        type: 'symbol',
+        source: 'positions',
+        layout: {
+          'text-field': ['get', 'unite'], // ou un autre champ comme 'type'
+          'text-offset': [0, 1.2],
+          'text-anchor': 'top'
+        },
+        paint: {
+          'text-color': '#000',
+          'text-halo-color': '#fff',
+          'text-halo-width': 1
+        }
+      });
+    });
+
+    map.on('click', 'unit-points', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const props = e.features[0].properties;
+
+      const popupContent = `
+        <strong>${props.unite}</strong>
+        <br>${props.date}<br>
+        <br>${props.lieu}<br>
+        <br>Effectif: ${props.effectif}<br>
+        <br>Planifié: ${props.planifie}<br>
+        <br>Extrait: ${props.justification}<br>
+        <br>Source: ${props.source}<br>
+      `;
+
+      new maplibregl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(popupContent)
+        .addTo(map);
+    });
+
+    
+
     CarteFacile.addOverlay(map, CarteFacile.Overlay.levelCurves);
-</script>
+
+    // Mise à jour de la carte à chaque changement
+    document.getElementById('unitSelect').addEventListener('change', function () {
+      const selectedUnit = this.value;
+
+      fetch(`/positions_par_unite?unite=${selectedUnit}`)
+        .then(res => res.json())
+        .then(data => {
+          if (map.getSource('positions')) {
+            map.getSource('positions').setData(data);
+            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
+          }
+        })
+      });
+
+
+    document.getElementById('dateSelect').addEventListener('change', function () {
+      const selectedDate = this.value;
+
+      fetch(`/positions_par_date?date=${selectedDate}`)
+        .then(res => res.json())
+        .then(data => {
+          if (map.getSource('positions')) {
+            map.getSource('positions').setData(data);
+            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
+          }
+        })
+      });
+
+
+    fetch('/units/')
+    .then(response => response.json())
+    .then(data => {
+      const unitSelect = document.getElementById('unitSelect');
+      console.log(data);
+      
+
+      // Remplir manuellement le <select>
+      data.forEach(unit => {
+        const option = document.createElement('option');
+        option.value = unit.id;
+        option.text = unit.text;
+        unitSelect.appendChild(option);
+      });
+
+      // Initialiser Choices.js après ajout
+      new Choices('#unitSelect');
+    });
+
+  </script>
+</html>

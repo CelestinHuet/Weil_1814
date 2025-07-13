@@ -19,7 +19,7 @@ class Command(BaseCommand):
             with open(directory/file, "r") as f:
                 data = json.load(f)
 
-            page = os.path.basename(file).split("-")[1]
+            page = file.replace(".json", "").split("-")[1]
         
             for position_dict in tqdm(data["positions"]):
                 position_unite = position_dict["unite"]

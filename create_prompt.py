@@ -25,7 +25,7 @@ for file in files:
     Dans le champ "position", pour chaque mouvement ou position de troupe identifié, donne un dictionnaire avec les clés :
     - "unite". Je ne veux que le nom du général de l'unité ou sinon le numéro de du corps d'armée ou de la division. Par exemple, je ne veux pas "corps de Sacken" mais "Sacken" 
     - "lieu". Si l'unité se trouve entre deux villes, mets un point-virgule entre les deux noms de ville. Si l'unité se trouve dans deux villes différentes à la fois, crée deux dictionnaires. Je ne veux que des noms de localités, pas de localisation vague comme "dans ses cantonnements" ou "le long du fleuve".
-    - "details". Cite le passage qui justifie ce mouvement de troupe
+    - "details". Cite la phrase complète qui justifie ce mouvement de troupe.
     - "date". Si la date n'est pas précisée, mets None. La date doit être de la forme jj/mm/aaaa. Si l'année n'est pas précisée, sache que les dates sont comprises entre décembre 1813 et mai 1814. 
     - "planifié". Je veux True ou False, mais rien d'autres. Ce doit être True dans le cas où c'est un mouvement planifié mais qui n'a pas été encore réalisé.
     - "effectif". Si l'effectif n'est pas précisé, mets None
