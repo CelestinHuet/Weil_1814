@@ -21,17 +21,24 @@ for file in files:
     {texte_notes}
     \"\"\"
     Réponds uniquement en JSON. 
-    Le json doit contenir deux champs : "positions" et "date".
-    Dans le champ "position", pour chaque mouvement ou position de troupe identifié, donne un dictionnaire avec les clés :
+    Le json doit contenir trois champs : "positions", "date" et "ordre_de_bataille".
+    Dans le champ "positions", pour chaque mouvement ou position de troupe identifié, donne un dictionnaire avec les clés :
     - "unite". Je ne veux que le nom du général de l'unité ou sinon le numéro de du corps d'armée ou de la division. Par exemple, je ne veux pas "corps de Sacken" mais "Sacken" 
     - "lieu". Si l'unité se trouve entre deux villes, mets un point-virgule entre les deux noms de ville. Si l'unité se trouve dans deux villes différentes à la fois, crée deux dictionnaires. Je ne veux que des noms de localités, pas de localisation vague comme "dans ses cantonnements" ou "le long du fleuve".
     - "details". Cite la phrase complète qui justifie ce mouvement de troupe.
     - "date". Si la date n'est pas précisée, mets None. La date doit être de la forme jj/mm/aaaa. Si l'année n'est pas précisée, sache que les dates sont comprises entre décembre 1813 et mai 1814. 
-    - "planifié". Je veux True ou False, mais rien d'autres. Ce doit être True dans le cas où c'est un mouvement planifié mais qui n'a pas été encore réalisé.
+    - "planifie". Je veux True ou False, mais rien d'autres. Ce doit être True dans le cas où c'est un mouvement planifié mais qui n'a pas été encore réalisé.
     - "effectif". Si l'effectif n'est pas précisé, mets None
     Liste-les dans une liste JSON.
 
     Dans le champ "date", il peut exister en tête d'un paragraphe la mention d'une date. Indique-là sous la forme jj/mm/aaaa. Si l'année n'est pas précisée, sache que les dates sont comprises entre décembre 1813 et mai 1814. Par exemple, si en début de paragraphe il y a "11 Janvier. —", mets 11/01/1814
+    
+    Dans le champ "ordre_de_bataille", pour chaque général, identifie :
+    - "nom_du_general"
+    - "grade" : grade ou fonction (ex. général de division, maréchal, commandant en chef, etc.)
+    - "commande" : ce qu’il commande (ex. 1er corps d’armée, 3e division, réserve de cavalerie, etc.)
+    - "subordonne" : s’il est subordonné à un supérieur, indique le nom de ce supérieur ou l'unité commandée par ce supérieur
+    - "camp" : Répond soit par "France", soit par "Coalition", soit par "None" si tu ne sais pas. Utilise en priorité le texte. Tu as le droit d'utiliser tes connaissances sur la Campagne de France de 1814. Pour rappel, "Coalition" regroupe les forces coalisées opposées à Napoléon (russes, prussiens, autrichiens, bavarois, wurtembourgeois, saxons, suédois...) 
     IMPORTANT : ta réponse doit être un JSON **valide**. Pas d'explications ni de texte hors JSON.
     """
 
