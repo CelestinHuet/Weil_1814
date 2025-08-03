@@ -33,7 +33,7 @@ python create_prompt_mise_au_propre.py
 
 Mettre au propre
 ```
-TODO
+python mise_au_propre.py
 ```
 
 Convertir les json en txt
@@ -55,7 +55,7 @@ python create_prompt.py
 
 Exécuter les prompts
 ```
-TODO
+python extract_text_information.py
 ```
 
 

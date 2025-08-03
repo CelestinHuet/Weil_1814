@@ -12,3 +12,5 @@ text/*
 *.png
 *.pyc
 *.sqlite3
+
+keys.txt
