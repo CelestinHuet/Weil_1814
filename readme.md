@@ -58,6 +58,11 @@ Exécuter les prompts
 python extract_text_information.py
 ```
 
+Géolocaliser les lieux
+```
+python geolocalisation.py
+```
+
 
 Insérer les lieux dans la base de données
 ```

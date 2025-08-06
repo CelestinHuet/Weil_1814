@@ -9,9 +9,9 @@ from tqdm import tqdm
 
 def get_lieux():
     lieux = []
-    json_files = [i for i in os.listdir("resultats/gemini_2-5_dates") if i[-5:]==".json"]
+    json_files = [i for i in os.listdir("resultats") if i[-5:]==".json"]
     for file in json_files:
-        with open(os.path.join("resultats/gemini_2-5_dates", file), 'r') as f:
+        with open(os.path.join("resultats", file), 'r') as f:
             data = json.load(f)
             for d in data["positions"]:
                 lieux.append(d["lieu"])

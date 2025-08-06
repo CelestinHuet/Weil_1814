@@ -91,12 +91,17 @@ for input_file in tqdm(input_files):
                 "response_schema": Schema,
             },
         )
-    except:
+    except Exception as e:
+        print(e)
         time.sleep(60)
+        continue
     
     
-    with open(output_file_path, "w") as f:
-        json.dump(response.parsed.to_dict(), f)
+    if response.parsed is not None:
+        with open(output_file_path, "w") as f:
+            json.dump(response.parsed.to_dict(), f)
+    else:
+        print(f"response.parsed is None : {output_file}")
 
     time.sleep(10)
 

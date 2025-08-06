@@ -50,6 +50,7 @@ for input_file in tqdm(input_files):
         )
     except:
         time.sleep(60)
+        continue
     
     
     with open(output_file_path, "w") as f:
@@ -59,5 +60,5 @@ for input_file in tqdm(input_files):
     time.sleep(10)
 
     nb_requetes += 1
-    if nb_requetes>240:
+    if nb_requetes>250:
         break
