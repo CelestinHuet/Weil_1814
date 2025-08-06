@@ -10,7 +10,8 @@ class Lieu(models.Model):
 
 
 class Position(models.Model):
-    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE)
+    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True)
+    lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
     planifie = models.BooleanField(default=False)
     justification = models.TextField(blank=True, null=True)
@@ -21,9 +22,36 @@ class Position(models.Model):
         return f"{self.lieu.nom} ({self.date})"
 
 
+CAMP_CHOICES = [
+        ('COALISES', 'Coalisés'),
+        ('FRANCAIS', 'Français'),
+        ('NONE', 'None')
+    ]
+
 class Unite(models.Model):
     nom = models.CharField(max_length=100)
     positions = models.ManyToManyField(Position, related_name='unites')
+    camp = models.CharField(max_length=10, choices=CAMP_CHOICES, default='NONE')
+    grade = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.nom
+    
+
+class Subordonne(models.Model):
+    date = models.DateField()
+    unite_commandant = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='commande_a')
+    unite_subordonnee = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='subordonnee_a')
+
+    def __str__(self):
+        return f"{self.unite_subordonnee} est sous les ordres de {self.unite_commandant} le {self.date}"
+
+
+
+class Commande(models.Model):
+    date = models.DateField()
+    general = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='dirige')
+    unite_commandee = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='est_dirigee_par')
+
+    def __str__(self):
+        return f"{self.general} commande {self.unite_commandee} le {self.date}"

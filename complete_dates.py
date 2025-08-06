@@ -34,6 +34,9 @@ for json_file in sorted(json_files):
         if not date_valide(position["date"]):
             position["date"] = current_date
 
+    for odb in data["ordre_de_bataille"]:
+        odb["date"] = current_date
+
     
     
     os.makedirs(output_dir, exist_ok=True)
