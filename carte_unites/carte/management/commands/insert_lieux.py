@@ -1,5 +1,5 @@
 import json
-
+from tqdm import tqdm
 from django.core.management.base import BaseCommand
 from carte.models import Lieu
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
         with open(file, "r") as f:
             data = json.load(f)
         
-        for lieu, value in data.items():
+        for lieu, value in tqdm(data.items()):
             if value is None:
                 Lieu.objects.get_or_create(nom=lieu)
             else:

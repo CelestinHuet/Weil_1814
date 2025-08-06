@@ -58,6 +58,11 @@ Exécuter les prompts
 python extract_text_information.py
 ```
 
+Compléter les dates manquantes 
+```
+python complete_dates.py
+```
+
 Géolocaliser les lieux
 ```
 python geolocalisation.py
@@ -66,10 +71,10 @@ python geolocalisation.py
 
 Insérer les lieux dans la base de données
 ```
-python manage.py insert_lieux --file lieux.json
+python manage.py insert_lieux --file ../coordonnees.json
 ```
 
 Insérer les unités dans la base de données
 ```
-python manage.py insert_unites --directory resultats/gemini_2-5_dates
+python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
 ```
