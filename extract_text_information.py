@@ -81,6 +81,10 @@ for input_file in tqdm(input_files):
    
     with open(input_dir/input_file, "r") as f:
         contents = f.read()
+
+    nb_requetes += 1
+    if nb_requetes>101:
+        break
         
     try:
         response = client.models.generate_content(
@@ -104,7 +108,3 @@ for input_file in tqdm(input_files):
         print(f"response.parsed is None : {output_file}")
 
     time.sleep(10)
-
-    nb_requetes += 1
-    if nb_requetes>100:
-        break
