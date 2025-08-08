@@ -47,7 +47,8 @@ def positions_par_date(request):
                     "planifie":pos.planifie,
                     "justification":pos.justification,
                     "effectif":pos.effectif,
-                    "source":pos.source
+                    "source":pos.source,
+                    "camp":unite.camp
                 }
             })
     return JsonResponse({
@@ -83,7 +84,8 @@ def positions_par_unite(request):
                     "planifie":pos.planifie,
                     "justification":pos.justification,
                     "effectif":pos.effectif,
-                    "source":pos.source
+                    "source":pos.source,
+                    "camp":unite.camp
                 }
             })
     return JsonResponse({

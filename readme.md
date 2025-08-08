@@ -79,6 +79,12 @@ Insérer les unités dans la base de données
 python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
 ```
 
+
+Associer les unités à des lieux
+```
+python manage.py associate_unites_lieux
+```
+
 Pour réinitialiser la base de données
 ```
 python manage.py flush

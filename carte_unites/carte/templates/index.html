@@ -90,6 +90,14 @@
     const nav = new maplibregl.NavigationControl();
     map.addControl(nav, 'top-right');
 
+    const circle_color = [
+      'match',
+      ['get', 'camp'],
+      'FRANCAIS', '#1d4ed8',     // bleu
+      'COALISES', '#e74c3c',     // rouge
+      '#cccccc'
+    ]
+
     map.addControl(scale);
     map.on('load', () => {
       map.addSource('positions', {
@@ -105,7 +113,7 @@
         source: 'positions',
         paint: {
           'circle-radius': 6,
-          'circle-color': '#1d4ed8',
+          'circle-color': circle_color,
           'circle-stroke-width': 1,
           'circle-stroke-color': '#fff'
         }
