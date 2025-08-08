@@ -14,17 +14,30 @@ def get_lieux():
         with open(os.path.join("resultats", file), 'r') as f:
             data = json.load(f)
             for d in data["positions"]:
-                lieux.append(d["lieu"])
+                positions_split = d["lieu"].split(";")
+                for p in positions_split:
+                    lieux.append(p)
     return set(lieux)
 
 
 # Charger les noms de villes depuis les fichiers JSON
 lieux = get_lieux()
 
+accepted_types = [
+    "administrative",
+    "city",
+    "bridge",
+    "forest",
+    "hamlet",
+    "locality",
+    "wood"
+]
+
 # Résultats : dictionnaire {nom: {lat: ..., lon: ...}}
-resultats = {}
+resultats = []
 points = []
 noms = []
+types = []
 # Boucle sur les lieux
 for lieu in tqdm(lieux):
     liste_lieux = lieu.split(";")
@@ -39,27 +52,21 @@ for lieu in tqdm(lieux):
                 'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
                 'limit': 15,
-                'countrycodes': 'fr,de,ch',  # France, Allemagne, Suisse
+                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )
         response.raise_for_status()
         data = response.json()
         if data:
-            lat += float(data[0]['lat'])
-            lon += float(data[0]['lon'])
-            compte += 1
+            for d in data:
+                if d["type"] in accepted_types:
+                    resultats.append({"lieu":lieu, "lat":d['lat'], "lon":d['lon'], "type":d["type"]})
+                    points.append(Point(d['lon'], d['lat']))
+                    noms.append(lieu)
+                    types.append(d["type"])
     
-    if compte != 0:
-        resultats[lieu] = {
-            'lat': lat/compte,
-            'lon': lon/compte
-        }
-        points.append(Point(lon/compte, lat/compte))
-        noms.append(lieu)
-    else:
-        resultats[lieu] = None  # Aucun résultat trouvé
-    time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
+        time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
 
 
 
@@ -70,4 +77,4 @@ with open('coordonnees.json', 'w', encoding='utf-8') as f:
 print("Terminé. Coordonnées sauvegardées dans 'coordonnees.json'")
     
 
-gpd.GeoDataFrame({"lieu":noms, "geometry":points}).set_crs(epsg=4326).to_file("coordonnees.gpkg")
+gpd.GeoDataFrame({"lieu":noms, "type":types, "geometry":points}).set_crs(epsg=4326).to_file("coordonnees.gpkg")

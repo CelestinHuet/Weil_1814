@@ -32,23 +32,24 @@ def positions_par_date(request):
     features = []
     for pos in positions:
         unite:Unite = pos.unites.all()[0]
-        features.append({
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
-            },
-            
-            "properties": {
-                "unite":unite.nom,
-                "date":pos.date,
-                "lieu":pos.lieu.nom,
-                "planifie":pos.planifie,
-                "justification":pos.justification,
-                "effectif":pos.effectif,
-                "source":pos.source
-            }
-        })
+        if pos.lieu is not None:
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
+                },
+                
+                "properties": {
+                    "unite":unite.nom,
+                    "date":pos.date,
+                    "lieu":pos.lieu.nom,
+                    "planifie":pos.planifie,
+                    "justification":pos.justification,
+                    "effectif":pos.effectif,
+                    "source":pos.source
+                }
+            })
     return JsonResponse({
         "type": "FeatureCollection",
         "features": features
@@ -67,23 +68,24 @@ def positions_par_unite(request):
     features = []
     for pos in positions:
         unite:Unite = pos.unites.all()[0]
-        features.append({
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
-            },
-            
-            "properties": {
-                "unite":unite.nom,
-                "date":pos.date,
-                "lieu":pos.lieu.nom,
-                "planifie":pos.planifie,
-                "justification":pos.justification,
-                "effectif":pos.effectif,
-                "source":pos.source
-            }
-        })
+        if pos.lieu is not None:
+            features.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
+                },
+                
+                "properties": {
+                    "unite":unite.nom,
+                    "date":pos.date,
+                    "lieu":pos.lieu.nom,
+                    "planifie":pos.planifie,
+                    "justification":pos.justification,
+                    "effectif":pos.effectif,
+                    "source":pos.source
+                }
+            })
     return JsonResponse({
         "type": "FeatureCollection",
         "features": features

@@ -14,8 +14,5 @@ class Command(BaseCommand):
         with open(file, "r") as f:
             data = json.load(f)
         
-        for lieu, value in tqdm(data.items()):
-            if value is None:
-                Lieu.objects.get_or_create(nom=lieu)
-            else:
-                Lieu.objects.get_or_create(nom=lieu, latitude=value["lat"], longitude=value["lon"])
+        for lieu in tqdm(data):
+            Lieu.objects.get_or_create(nom=lieu["lieu"], latitude=lieu["lat"], longitude=lieu["lon"])

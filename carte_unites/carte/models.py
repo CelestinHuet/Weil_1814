@@ -19,7 +19,10 @@ class Position(models.Model):
     source = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return f"{self.lieu.nom} ({self.date})"
+        if self.lieu is not None:
+            return f"{self.lieu.nom} ({self.date})"
+        else:
+            return f"{self.lieu_str} ({self.date})"
 
 
 CAMP_CHOICES = [
