@@ -46,17 +46,31 @@ for lieu in tqdm(lieux):
     compte = 0
     for l in liste_lieux:
         # Requête à l'API Nominatim
-        response = requests.get(
-            'https://nominatim.openstreetmap.org/search',
-            params={
-                'q': l,  # on précise France pour éviter les homonymes
-                'format': 'json',
-                'limit': 15,
-                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
-            },
-            headers={'User-Agent': 'geo-script/1.0'}
-        )
-        response.raise_for_status()
+        try:
+            response = requests.get(
+                'https://nominatim.openstreetmap.org/search',
+                params={
+                    'q': l,  # on précise France pour éviter les homonymes
+                    'format': 'json',
+                    'limit': 15,
+                    'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+                },
+                headers={'User-Agent': 'geo-script/1.0'}
+            )
+            response.raise_for_status()
+        except:
+            time.sleep(60)
+            response = requests.get(
+                'https://nominatim.openstreetmap.org/search',
+                params={
+                    'q': l,  # on précise France pour éviter les homonymes
+                    'format': 'json',
+                    'limit': 15,
+                    'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+                },
+                headers={'User-Agent': 'geo-script/1.0'}
+            )
+            response.raise_for_status()
         data = response.json()
         if data:
             for d in data:
