@@ -28,6 +28,24 @@ class Command(BaseCommand):
             year=int(date_split[2])
         )
         return date_dt
+    
+
+    def convert_camp(self, odb):
+        camp = odb["camp"]
+        if camp=="Coalition":
+            return "COALISES"
+        elif camp=="France":
+            return "FRANCAIS"
+        else:
+            return "NONE"
+        
+
+    def get_or_create_unite(self, unites, nom, camp):
+        for unite in unites:
+            if unite.nom==nom:
+                return unite, False
+        return Unite.objects.create(nom=nom, camp=camp), True
+
 
 
     def handle(self, *args, **options):
@@ -38,15 +56,38 @@ class Command(BaseCommand):
                 data = json.load(f)
 
             page = file.replace(".json", "").split("-")[1]
+            unites_creees = []
 
-            odb = data["ordre_de_bataille"]
+            for odb in data["ordre_de_bataille"]:
+                camp = self.convert_camp(odb)
+                general = Unite.objects.create(
+                    nom=odb["nom_du_general"],
+                    camp=camp,
+                    grade=odb["grade"]
+                )
+                unites_creees.append(general)
+                date_dt = self.convert_date(odb["date"])
+
+                if odb["commande"]!="None" and odb["commande"]!="null":
+                    unite_commandee, boolean = self.get_or_create_unite(unites_creees, odb["commande"], camp)
+                    if boolean:
+                        unites_creees.append(unite_commandee)
+                    Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
+
+                
+                if odb["subordonne"]!="None" and odb["subordonne"]!="null":
+                    unite_commandant, boolean = self.get_or_create_unite(unites_creees, odb["subordonne"], camp)
+                    if boolean:
+                        unites_creees.append(unite_commandee)
+                    Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
+
         
             # Pour chaque position :
             for position_dict in data["positions"]:
-                
-                # On récupère l'unité
-                position_unite = position_dict["unite"]
-                unite, _ = Unite.objects.get_or_create(nom=position_unite)
+
+                unite, boolean = self.get_or_create_unite(unites_creees, position_dict["unite"], "NONE")
+                if boolean:
+                    unites_creees.append(unite_commandee)
                 
                 # On récupère le lieu, sous forme de str
                 position_lieu = position_dict["lieu"]
@@ -70,34 +111,4 @@ class Command(BaseCommand):
                     source=f"Weil T.{options.get("tome")}, p.{page}"
                 )
                 unite.positions.add(position)
-
-
-                unite_dict = self.get_unite_from_odb(position_unite, odb)
-                if unite_dict is not None:
-                    camp = unite_dict["camp"]
-                    if camp=="Coalition":
-                        unite.camp = "COALISES"
-                    elif camp=="France":
-                        unite.camp = "FRANCAIS"
-                    else:
-                        print(camp)
-                    
-                    grade = unite_dict["grade"]
-                    unite.grade = grade
                 unite.save()
-
-                if unite_dict is not None:
-                    if unite_dict["subordonne"] is not None:
-                        unite_commandant,_ = Unite.objects.get_or_create(nom=unite_dict["subordonne"])
-                        date_dt = self.convert_date(unite_dict["date"])
-                        subordonnee = Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=unite, date=date_dt)
-
-                    if unite_dict["commande"] is not None:
-                        unite_commandee,_ = Unite.objects.get_or_create(nom=unite_dict["commande"])
-                        date_dt = self.convert_date(unite_dict["date"])
-                        commande = Commande.objects.create(general=unite, unite_commandee=unite_commandee, date=date_dt)
-
-
-
-
-                 

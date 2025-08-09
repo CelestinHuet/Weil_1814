@@ -40,6 +40,11 @@ class Unite(models.Model):
     def __str__(self):
         return self.nom
     
+    def is_general(self):
+        if len(list(self.dirige.all())):
+            return True
+        return False
+    
 
 class Subordonne(models.Model):
     date = models.DateField()

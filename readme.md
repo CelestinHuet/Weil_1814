@@ -80,6 +80,14 @@ python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_correct
 ```
 
 
+Fusionner les unités qui n'ont que la casse de différences dans le nom
+```
+python manage.py fusionner_unites
+python manage.py fusionner_unites_etape_2
+```
+
+
+
 Associer les unités à des lieux
 ```
 python manage.py associate_unites_lieux
