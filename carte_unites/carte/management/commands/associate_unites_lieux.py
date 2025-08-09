@@ -62,10 +62,18 @@ class Lieu_d:
         return " ".join(self.lieux.__str__())
     
     def get_precedent(self):
-        if self.precedent is not None:
-            return self.precedent.get_precedent() + [self]
-        else:
-            return [self]
+        compte = 0
+        lieu = self
+        liste = [self]
+        while lieu.precedent is not None:
+            liste.append(lieu.precedent)
+            lieu = lieu.precedent
+            compte += 1
+            if compte > 5000:
+                print("b erreur 5000")
+                break
+
+        return reversed(liste)
         
 
     def set_lieu(self):
@@ -138,7 +146,7 @@ class List_Lieu_d:
             compte += 1
             if compte > 5000:
                 print("erreur 5000")
-                break
+                return None, None
         return lieu_en_cours.get_precedent(), lieu_en_cours.distance
 
 
@@ -149,6 +157,9 @@ class List_Lieu_d:
             return None
         for entree_0 in self.list[0]:
             parcours, distance = self.dikjstra(entree_0)
+            if parcours is None:
+                print(self.list, entree_0)
+                return
             if distance < distance_min:
                 parcours_min = parcours
                 distance_min = distance
@@ -169,16 +180,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        unites = list(Unite.objects.values_list('nom', flat=True))
-        
-        for nom_unite in tqdm(unites):
-            unite = Unite.objects.get(nom=nom_unite)
-            positions = unite.positions.all()
+        done = []
+        for unite in tqdm(Unite.objects.all()):
+            if unite in done:
+                continue
+            
+            unites = unite.get_equivalence()
+
+            positions = []
+            for u in unites:
+                positions += u.positions.all()
+
             positions = sorted(positions, key=lambda x: x.date)
 
             list_lieu_d = List_Lieu_d(positions)
 
             list_lieu_d.find_best_trajet()
+
+            done += unites
 
 
 

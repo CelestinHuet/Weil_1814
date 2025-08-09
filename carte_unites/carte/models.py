@@ -45,6 +45,18 @@ class Unite(models.Model):
             return True
         return False
     
+    def get_equivalence(self):
+        unites = [self]
+        commande0 = Commande.objects.filter(general=self)
+        for c in commande0:
+            unites.append(c.unite_commandee)
+        commande1 = Commande.objects.filter(unite_commandee=self)
+        for c in commande1:
+            unites.append(c.general)
+        return unites
+        
+
+    
 
 class Subordonne(models.Model):
     date = models.DateField()
