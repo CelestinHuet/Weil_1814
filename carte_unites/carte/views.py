@@ -13,8 +13,8 @@ class Carte(TemplateView):
     
 
 def liste_unites(request):
-    unites = Unite.objects.all().values('id', 'nom')
-    data = [{'id': u['id'], 'text': u['nom']} for u in unites]
+    unites = Unite.objects.all()
+    data = [{'id': u.id, 'text': u.nom_avec_general()} for u in unites]
     return JsonResponse(data, safe=False)
 
 
@@ -68,7 +68,7 @@ def positions_par_unite(request):
     positions = []
     for u in unites:
         positions += u.positions.all()
-        
+
     features = []
     for pos in positions:
         unite:Unite = pos.unites.all()[0]

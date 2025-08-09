@@ -54,7 +54,13 @@ class Unite(models.Model):
         for c in commande1:
             unites.append(c.general)
         return unites
-        
+    
+    def nom_avec_general(self):
+        generaux = list(self.est_dirigee_par.all())
+        if len(generaux)>=1:
+            return f"{self.nom} ({generaux[0].general.nom})"
+        else:
+            return self.nom
 
     
 
