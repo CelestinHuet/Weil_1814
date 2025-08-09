@@ -64,8 +64,11 @@ def positions_par_unite(request):
     
     unite = Unite.objects.get(id=unite)
 
-    positions = unite.positions.all()
-
+    unites = unite.get_equivalence()
+    positions = []
+    for u in unites:
+        positions += u.positions.all()
+        
     features = []
     for pos in positions:
         unite:Unite = pos.unites.all()[0]
