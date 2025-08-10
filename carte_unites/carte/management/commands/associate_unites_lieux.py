@@ -51,6 +51,7 @@ class Lieu_d:
 
         self.distance = 0
         self.precedent = None
+        self.d_max = self.distance_max()
 
     def compute_lat_lon(self):
         lat = []
@@ -59,6 +60,16 @@ class Lieu_d:
             lat.append(l.latitude)
             lon.append(l.longitude)
         return sum(lat)/len(lat), sum(lon)/len(lon)
+    
+    def distance_max(self):
+        d_max = 0
+        for i in range(len(self.lieux)-1):
+            l0 = self.lieux[i]
+            l1 = self.lieux[i+1]
+            d_max = max(l0.distance(l1), d_max)
+        return d_max
+
+
     
     def add_voisin(self, lieu1):
         self.voisins.append(Voisin(lieu1, self))
@@ -119,7 +130,9 @@ class List_Lieu_d:
                 liste.append(list(Lieu.objects.filter(nom=p_l_str_item)))
             combinaisons = list(product(*liste))
             for combinaison in combinaisons:
-                list_lieu_d.append(Lieu_d(combinaison, position))
+                lieu_d = Lieu_d(combinaison, position)
+                if lieu_d.d_max < 100:
+                    list_lieu_d.append(lieu_d)
             if len(list_lieu_d)!=0:
                 list_all.append(list_lieu_d)
         return list_all

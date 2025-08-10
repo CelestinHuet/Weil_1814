@@ -46,6 +46,7 @@
     }
 
     .controls label {
+      width: 400px;
       margin-bottom: 0.5rem;
     }
 
@@ -197,10 +198,12 @@
 
       // Si "Tous", on retire le filtre
       if  (value) {
-        map.setFilter('unit-points', ['==', ['get', 'planifie'], true]);
+        map.setFilter('unit-points', ['==', ['get', 'planifie'], false]);
+        map.setFilter('unites-labels', ['==', ['get', 'planifie'], false]);
       } else {
         // Sinon, on applique un filtre sur la propriété "type"
         map.setFilter('unit-points', null);
+        map.setFilter('unites-labels', null);
       }
     });
 
