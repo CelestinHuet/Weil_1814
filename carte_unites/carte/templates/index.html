@@ -70,6 +70,11 @@
       <label for="dateSelect">Sélectionner une date :</label>
       <input type="date" id="dateSelect" min="1813-12-01" max="1814-04-30" value="1813-12-01">
     </form>
+
+
+    <div id="filters">
+      <label><input type="checkbox" name="type" id="planifieSelect"> Retirer les lieux objectifs</label>
+    </div>
   </section>
 
   <div id="map"></div>
@@ -168,7 +173,7 @@
         .then(data => {
           if (map.getSource('positions')) {
             map.getSource('positions').setData(data);
-            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
+            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);            
           }
         })
       });
@@ -186,6 +191,18 @@
           }
         })
       });
+
+    document.getElementById('filters').addEventListener('change', (e) => {
+      const value = document.getElementById("planifieSelect").checked;     
+
+      // Si "Tous", on retire le filtre
+      if  (value) {
+        map.setFilter('unit-points', ['==', ['get', 'planifie'], true]);
+      } else {
+        // Sinon, on applique un filtre sur la propriété "type"
+        map.setFilter('unit-points', null);
+      }
+    });
 
 
     fetch('/units/')
