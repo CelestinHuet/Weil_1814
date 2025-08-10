@@ -1,4 +1,5 @@
 from django.db import models
+from math import acos, cos, sin, pi
 
 class Lieu(models.Model):
     nom = models.CharField(max_length=100)
@@ -7,6 +8,19 @@ class Lieu(models.Model):
 
     def __str__(self):
         return self.nom
+    
+    def distance(self, l2):
+        l1_lat = self.latitude * pi / 180
+        l2_lat = l2.latitude * pi / 180
+        l1_lon = self.longitude * pi / 180
+        l2_lon = l2.longitude * pi / 180
+        sinus = sin(l1_lat) * sin(l2_lat)
+        cosinus = cos(l1_lat) * cos(l2_lat) * cos(l1_lon - l2_lon)
+        try:
+            arccos = acos(sinus+cosinus)
+        except:
+            arccos = acos(1)
+        return 6371 * arccos
 
 
 class Position(models.Model):
@@ -53,7 +67,7 @@ class Unite(models.Model):
         commande1 = Commande.objects.filter(unite_commandee=self)
         for c in commande1:
             unites.append(c.general)
-        return unites
+        return set(unites)
     
     def nom_avec_general(self):
         generaux = list(self.est_dirigee_par.all())

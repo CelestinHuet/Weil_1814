@@ -15,8 +15,13 @@ class Voisin:
 
     def compute_distance(self, l1, l2):
 
-        sinus = sin(l1.lat) * sin(l2.lat)
-        cosinus = cos(l1.lat) * cos(l2.lat) * cos(l1.lon - l2.lon)
+        l1_lat = l1.lat * pi / 180
+        l2_lat = l2.lat * pi / 180
+        l1_lon = l1.lon * pi / 180
+        l2_lon = l2.lon * pi / 180
+
+        sinus = sin(l1_lat) * sin(l2_lat)
+        cosinus = cos(l1_lat) * cos(l2_lat) * cos(l1_lon - l2_lon)
         try:
             arccos = acos(sinus+cosinus)
         except:
@@ -53,7 +58,7 @@ class Lieu_d:
         for l in self.lieux:
             lat.append(l.latitude)
             lon.append(l.longitude)
-        return sum(lat)/len(lat)*pi/180, sum(lon)/len(lon)*pi/180
+        return sum(lat)/len(lat), sum(lon)/len(lon)
     
     def add_voisin(self, lieu1):
         self.voisins.append(Voisin(lieu1, self))
@@ -155,10 +160,10 @@ class List_Lieu_d:
         distance_min = 1e10
         if len(self.list)==0:
             return None
+    
         for entree_0 in self.list[0]:
             parcours, distance = self.dikjstra(entree_0)
             if parcours is None:
-                print(self.list, entree_0)
                 return
             if distance < distance_min:
                 parcours_min = parcours

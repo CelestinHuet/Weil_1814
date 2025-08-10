@@ -52,7 +52,7 @@ for lieu in tqdm(lieux):
                 params={
                     'q': l,  # on précise France pour éviter les homonymes
                     'format': 'json',
-                    'limit': 15,
+                    'limit': 100,
                     'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
                 },
                 headers={'User-Agent': 'geo-script/1.0'}
