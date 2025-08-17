@@ -104,7 +104,9 @@
       '#cccccc'
     ]
 
+    // Instanciation des couches
     map.addControl(scale);
+    // Couche position
     map.on('load', () => {
       map.addSource('positions', {
         type: 'geojson',
@@ -139,8 +141,27 @@
           'text-halo-width': 1
         }
       });
+      // Couche avec les flèches de déplacements
+      map.addSource('trajets', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+      map.addLayer({
+        id: 'arrows',
+        type: 'line',
+        source: 'trajets',
+        paint: {
+          'line-color': circle_color,   // Rouge
+          'line-width': 1,
+          'line-opacity': 0.8
+        }
+      });
     });
 
+    // Pop-up sur les positions
     map.on('click', 'unit-points', (e) => {
       const coordinates = e.features[0].geometry.coordinates.slice();
       const props = e.features[0].properties;
@@ -165,7 +186,7 @@
 
     CarteFacile.addOverlay(map, CarteFacile.Overlay.levelCurves);
 
-    // Mise à jour de la carte à chaque changement
+    // Mise à jour de la carte lors de la sélection d'une unité
     document.getElementById('unitSelect').addEventListener('change', function () {
       const selectedUnit = this.value;
 
@@ -173,27 +194,30 @@
         .then(res => res.json())
         .then(data => {
           if (map.getSource('positions')) {
-            map.getSource('positions').setData(data);
-            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);            
+            map.getSource('positions').setData(data["position"]);
+            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
+            map.getSource('trajets').setData(data["arrows"]);                        
           }
         })
       });
 
-
+    // Mise à jour de la carte lors de la sélection d'une date
     document.getElementById('dateSelect').addEventListener('change', function () {
       const selectedDate = this.value;
-
       fetch(`/positions_par_date?date=${selectedDate}`)
         .then(res => res.json())
         .then(data => {
           if (map.getSource('positions')) {
-            map.getSource('positions').setData(data);
+            map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
+            map.getSource('trajets').setData(data["arrows"]);
           }
         })
       });
 
-    document.getElementById('filters').addEventListener('change', (e) => {
+    
+      // Filtre sur l'état "planifié" des positions
+      document.getElementById('filters').addEventListener('change', (e) => {
       const value = document.getElementById("planifieSelect").checked;     
 
       // Si "Tous", on retire le filtre
@@ -207,13 +231,11 @@
       }
     });
 
-
+    // On remplit le <select> avec le nom des unités
     fetch('/units/')
     .then(response => response.json())
     .then(data => {
       const unitSelect = document.getElementById('unitSelect');
-      
-
       // Remplir manuellement le <select>
       data.forEach(unit => {
         const option = document.createElement('option');

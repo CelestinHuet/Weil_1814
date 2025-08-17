@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from carte.models import Unite, Position
+from carte.models import Unite, Position, Arrow
 from django.http import JsonResponse
 from datetime import datetime
 
@@ -31,6 +31,8 @@ def positions_par_date(request):
 
     features = []
     for pos in positions:
+        if len(pos.unites.all())==0:
+            continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
             features.append({
@@ -51,10 +53,34 @@ def positions_par_date(request):
                     "camp":unite.camp
                 }
             })
+    
+    
+    arrows = Arrow.objects.filter(date=date_dt)
+    features_arrows = []
+    for arrow in arrows:
+        features_arrows.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[arrow.lieu_depart.longitude, arrow.lieu_depart.latitude],[arrow.lieu_arrivee.longitude, arrow.lieu_arrivee.latitude]]
+                },
+                
+                "properties": {
+                    "camp":arrow.unite.camp
+                }
+            })
+
+
     return JsonResponse({
-        "type": "FeatureCollection",
-        "features": features
-    })
+            "position":{
+                "type": "FeatureCollection",
+                "features": features
+            },
+            "arrows":{
+                "type": "FeatureCollection",
+                "features": features_arrows
+            }
+        })
 
 
 def positions_par_unite(request):
@@ -71,6 +97,8 @@ def positions_par_unite(request):
 
     features = []
     for pos in positions:
+        if len(pos.unites.all())==0:
+            continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
             features.append({
@@ -91,7 +119,33 @@ def positions_par_unite(request):
                     "camp":unite.camp
                 }
             })
+
+    arrows = []
+    for unite in unites:
+        arrows += list(Arrow.objects.filter(unite=unite))
+    arrows = set(arrows)
+    features_arrows = []
+    for arrow in arrows:
+        features_arrows.append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [[arrow.lieu_depart.longitude, arrow.lieu_depart.latitude],[arrow.lieu_arrivee.longitude, arrow.lieu_arrivee.latitude]]
+                },
+                
+                "properties": {
+                    "camp":arrow.unite.camp
+                }
+            })
+
+
     return JsonResponse({
-        "type": "FeatureCollection",
-        "features": features
-    })
+            "position":{
+                "type": "FeatureCollection",
+                "features": features
+            },
+            "arrows":{
+                "type": "FeatureCollection",
+                "features": features_arrows
+            }
+        })

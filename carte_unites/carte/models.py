@@ -95,3 +95,10 @@ class Commande(models.Model):
 
     def __str__(self):
         return f"{self.general} commande {self.unite_commandee} le {self.date}"
+    
+
+class Arrow(models.Model):
+    date = models.DateField()
+    lieu_depart = models.ForeignKey(Lieu, on_delete=models.CASCADE, related_name='lieu_depart_arrow')
+    lieu_arrivee = models.ForeignKey(Lieu, on_delete=models.CASCADE, related_name='lieu_arrivee_arrow')
+    unite = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='unite_arrow')

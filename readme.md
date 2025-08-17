@@ -88,12 +88,29 @@ python manage.py fusionner_unites_etape_2
 
 
 
-Associer les unités à des lieux
+Associer les unités à des lieux et contrôler qu'il n'y a pas d'erreurs
 ```
 python manage.py associate_unites_lieux
+python manage.py controle_localisation
+```
+
+
+Créer les flèches de déplacement d'unités
+```
+python manage.py create_arrows
 ```
 
 Pour réinitialiser la base de données
 ```
 python manage.py flush
 ```
+
+
+
+
+python manage.py insert_lieux --file ../coordonnees.json
+python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
+python manage.py fusionner_unites
+python manage.py fusionner_unites_etape_2
+python manage.py associate_unites_lieux
+python manage.py create_arrows
