@@ -7,6 +7,23 @@ import os
 from tqdm import tqdm
 
 
+
+
+nouveaux_noms = {
+    "Ligny":["Ligny-en-Barrois"],
+    "Vassy":["Wassy"],
+    "Eurville":["Eurville-Bienville"],
+    "Dommartin":["Dommartin-lès-Toul"],
+    "Bar":["Bar-sur-Aube", "Bar-sur-Seine"],
+    "Vendeuvre":["Vendeuvre-sur-Barse"],
+    "La Chaussée":["La Chaussée-sur-Marne"],
+    "Brienne":["Brienne-le-Château"],
+    "Saint-Urbain":["Saint-Urbain-Maconcourt"],
+    "Thaon":["Thaon-les-Vosges"],
+    "Perthes":["Perthes-lès-Brienne"]
+}
+
+
 def get_lieux():
     lieux = []
     json_files = [i for i in os.listdir("resultats") if i[-5:]==".json"]
@@ -18,6 +35,36 @@ def get_lieux():
                 for p in positions_split:
                     lieux.append(p)
     return set(lieux)
+
+
+def requete(l):
+    time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
+    try:
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': l,  # on précise France pour éviter les homonymes
+                'format': 'json',
+                'limit': 100,
+                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+            },
+            headers={'User-Agent': 'geo-script/1.0'}
+        )
+        response.raise_for_status()
+    except:
+        time.sleep(60)
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params={
+                'q': l,  # on précise France pour éviter les homonymes
+                'format': 'json',
+                'limit': 15,
+                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+            },
+            headers={'User-Agent': 'geo-script/1.0'}
+        )
+        response.raise_for_status()
+    return response
 
 
 # Charger les noms de villes depuis les fichiers JSON
@@ -45,32 +92,7 @@ for lieu in tqdm(lieux):
     lon = 0
     compte = 0
     for l in liste_lieux:
-        # Requête à l'API Nominatim
-        try:
-            response = requests.get(
-                'https://nominatim.openstreetmap.org/search',
-                params={
-                    'q': l,  # on précise France pour éviter les homonymes
-                    'format': 'json',
-                    'limit': 100,
-                    'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
-                },
-                headers={'User-Agent': 'geo-script/1.0'}
-            )
-            response.raise_for_status()
-        except:
-            time.sleep(60)
-            response = requests.get(
-                'https://nominatim.openstreetmap.org/search',
-                params={
-                    'q': l,  # on précise France pour éviter les homonymes
-                    'format': 'json',
-                    'limit': 15,
-                    'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
-                },
-                headers={'User-Agent': 'geo-script/1.0'}
-            )
-            response.raise_for_status()
+        response = requete(l)
         data = response.json()
         if data:
             for d in data:
@@ -80,7 +102,18 @@ for lieu in tqdm(lieux):
                     noms.append(lieu)
                     types.append(d["type"])
     
-        time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
+        if l in list(nouveaux_noms.keys()):
+            for nouveau_nom in nouveaux_noms[l]:
+                response = requete(nouveau_nom)
+                data = response.json()
+                if data:
+                    for d in data:
+                        if d["type"] in accepted_types:
+                            resultats.append({"lieu":lieu, "lat":d['lat'], "lon":d['lon'], "type":d["type"]})
+                            points.append(Point(d['lon'], d['lat']))
+                            noms.append(lieu)
+                            types.append(d["type"])
+
 
 
 
