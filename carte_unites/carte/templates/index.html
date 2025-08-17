@@ -71,6 +71,8 @@
       <label for="dateSelect">Sélectionner une date :</label>
       <input type="date" id="dateSelect" min="1813-12-01" max="1814-04-30" value="1813-12-01">
     </form>
+    <button onclick="decrementDate()">Jour précédent</button>
+    <button onclick="incrementDate()">Jour suivant</button>
 
 
     <div id="filters">
@@ -204,7 +206,14 @@
     // Mise à jour de la carte lors de la sélection d'une date
     document.getElementById('dateSelect').addEventListener('change', function () {
       const selectedDate = this.value;
-      fetch(`/positions_par_date?date=${selectedDate}`)
+      updateDataDate(selectedDate);
+      
+      });
+
+
+
+      function updateDataDate(selectedDate) {
+        fetch(`/positions_par_date?date=${selectedDate}`)
         .then(res => res.json())
         .then(data => {
           if (map.getSource('positions')) {
@@ -213,7 +222,8 @@
             map.getSource('trajets').setData(data["arrows"]);
           }
         })
-      });
+        
+      }
 
     
       // Filtre sur l'état "planifié" des positions
@@ -247,6 +257,43 @@
       // Initialiser Choices.js après ajout
       new Choices('#unitSelect');
     });
+
+
+
+
+
+    function decrementDate() {
+        const input = document.getElementById('dateSelect');
+        if (input.value) {
+            const currentDate = new Date(input.value);
+            currentDate.setDate(currentDate.getDate() - 1); // soustrait 1 jour
+            input.value = currentDate.toISOString().split('T')[0];
+        } else {
+            const today = new Date();
+            today.setDate(today.getDate() - 1);
+            input.value = today.toISOString().split('T')[0];
+        }
+        updateDataDate(input.value);
+    }
+
+
+    // Increment date
+    function incrementDate() {
+    const input = document.getElementById('dateSelect');
+    if (input.value) {
+        const currentDate = new Date(input.value);
+        currentDate.setDate(currentDate.getDate() + 1); // ajoute 1 jour
+        input.value = currentDate.toISOString().split('T')[0]; // format YYYY-MM-DD
+    } else {
+        // Si aucune date sélectionnée, mettre aujourd’hui + 1
+        const today = new Date();
+        today.setDate(today.getDate() + 1);
+        input.value = today.toISOString().split('T')[0];
+    }
+    updateDataDate(input.value);
+  }
+
+    
 
   </script>
 </html>
