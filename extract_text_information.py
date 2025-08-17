@@ -78,9 +78,8 @@ for input_file in tqdm(input_files):
     if os.path.isfile(output_file_path):
         continue
    
-   
     with open(input_dir/input_file, "r") as f:
-        contents = f.read()
+        contents = f"request id : {output_file} \n Timestamp : {time.time()}" + f.read()
 
     nb_requetes += 1
     if nb_requetes>101:
@@ -102,9 +101,13 @@ for input_file in tqdm(input_files):
     
     
     if response.parsed is not None:
+        print(f"Réussi : {output_file}")
         with open(output_file_path, "w") as f:
             json.dump(response.parsed.to_dict(), f)
     else:
         print(f"response.parsed is None : {output_file}")
+        print(response)
+        print(response.text)
+        print(response.candidates[0].content.parts)
 
-    time.sleep(10)
+    time.sleep(60)
