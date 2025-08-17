@@ -29,17 +29,23 @@ def positions_par_date(request):
     # Filtrage par date exacte (ou plage si besoin)
     positions = Position.objects.filter(date=date_dt)
 
+    pas = 0.005
+    positions_coords = []
+
     features = []
     for pos in positions:
         if len(pos.unites.all())==0:
             continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
+            position = [pos.lieu.longitude, pos.lieu.latitude]
+            while position in positions_coords:
+                position[0] += pas
             features.append({
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
+                    "coordinates": position
                 },
                 
                 "properties": {
@@ -53,6 +59,7 @@ def positions_par_date(request):
                     "camp":unite.camp
                 }
             })
+            positions_coords.append(position)
     
     
     arrows = Arrow.objects.filter(date=date_dt)
@@ -90,6 +97,9 @@ def positions_par_unite(request):
     
     unite = Unite.objects.get(id=unite)
 
+    pas = 0.005
+    positions_coords = []
+
     unites = unite.get_equivalence()
     positions = []
     for u in unites:
@@ -101,11 +111,14 @@ def positions_par_unite(request):
             continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
+            position = [pos.lieu.longitude, pos.lieu.latitude]
+            while position in positions_coords:
+                position[0] += pas
             features.append({
                 "type": "Feature",
                 "geometry": {
                     "type": "Point",
-                    "coordinates": [pos.lieu.longitude, pos.lieu.latitude]
+                    "coordinates": position
                 },
                 
                 "properties": {
