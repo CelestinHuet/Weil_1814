@@ -40,15 +40,23 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+
+        # On fusionne toutes les unités qui sont des généraux et qui ont le même nom
         
         
+        # On récupère tous les noms d'unités
         unites = set(list(Unite.objects.values_list('nom', flat=True)))
+        
+        # Pour chaque nom d'unité
         for nom_unite in tqdm(unites):
+            # On récupère toutes les unités qui ont le même nom
             unites_noms = list(Unite.objects.filter(nom=nom_unite))
             
             
+            # Si l'unité est un général
             if self.is_general(unites_noms):
                 
+                # On crée une nouvelle unité
                 new_grade = self.get_grade(unites_noms)
                 new_camp = self.get_camp(unites_noms)
 
@@ -60,6 +68,7 @@ class Command(BaseCommand):
 
                 unites_delete = []
             
+                # On remplace toutes les unités par la nouvelle unité
                 for u in unites_noms:
                     for p in u.positions.all():
                         new_unite.positions.add(p)

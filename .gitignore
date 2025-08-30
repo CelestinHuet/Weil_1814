@@ -4,6 +4,7 @@ prompts/*
 prompts_mise_au_propre/*
 resultats/*
 resultats_mise_au_propre/*
+resultats_save/*
 text/*
 *.gpkg
 *.json

@@ -13,12 +13,17 @@ class Command(BaseCommand):
         parser.add_argument('--file', type=str, help="")
 
 
-    def delete(self, p_remove):
+    def delete(self, p_remove, voisin):
         l = p_remove.lieu
         if l in self.erreurs:
-            self.erreurs[l]+=1
+            self.erreurs[l]["compte"]+=1
+            if voisin not in self.erreurs[l]["voisins"]:
+                self.erreurs[l]["voisins"].append(voisin)
         else:
-            self.erreurs[l] = 1
+            self.erreurs[l] = {
+                "compte":1,
+                "voisins":[voisin]
+            }
         
         for u in p_remove.unites.all():
             u.positions.remove(p_remove)
@@ -27,10 +32,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         seuil = 90
-        erreurs = {}
         for unite in tqdm(Unite.objects.all()):
+            
             print("")
             print(unite)
+
             
             unites = unite.get_equivalence()
 
@@ -59,22 +65,25 @@ class Command(BaseCommand):
                     print(f"{l0} - {l1} : {distance_moyenne} km")
 
             for i in range(1, len(list_dict)-1):
+                print(list_dict[i]["distance"], seuil)
                 if list_dict[i]["distance"] >= seuil and list_dict[i+1]["distance"] >= seuil:
                     if list_dict[i]["l1"]==list_dict[i+1]["l0"]:
-                        self.delete(list_dict[i]["p1"])
+                        self.delete(list_dict[i]["p1"], list_dict[i]["p0"])
                         
                 if list_dict[i]["distance"] >= seuil and list_dict[i+1]["distance"] < seuil:
                     if list_dict[i]["l1"]==list_dict[i+1]["l0"]:
-                        self.delete(list_dict[i]["p0"])
+                        self.delete(list_dict[i]["p0"], list_dict[i]["p1"])
 
                 if list_dict[i]["distance"] >= seuil and list_dict[i-1]["distance"] < seuil:
                     if list_dict[i]["l0"]==list_dict[i-1]["l1"]:
-                        self.delete(list_dict[i]["p1"])
+                        self.delete(list_dict[i]["p1"], list_dict[i]["p0"])
 
                 if list_dict[i]["distance"] >= seuil:
                     if list_dict[i-1]["l1"]!=list_dict[i]["l0"] and list_dict[i]["l1"]!=list_dict[i+1]["l0"]:
-                        self.delete(list_dict[i]["p1"])
-                        self.delete(list_dict[i]["p0"])
+                        self.delete(list_dict[i]["p1"], list_dict[i+1]["p0"])
+                        self.delete(list_dict[i]["p0"], list_dict[i-1]["p1"])
 
-        trie = dict(sorted(erreurs.items(), key=lambda item: item[1], reverse=True))
+        trie = dict(sorted(self.erreurs.items(), key=lambda item: item[1]["compte"], reverse=True))
         print(trie)
+        for key, value in trie.items():
+            print(f"{key} : {value["compte"]}, {value["voisins"]}")

@@ -63,10 +63,8 @@ class Unite(models.Model):
         unites = [self]
         commande0 = Commande.objects.filter(general=self)
         for c in commande0:
-            unites.append(c.unite_commandee)
-        commande1 = Commande.objects.filter(unite_commandee=self)
-        for c in commande1:
-            unites.append(c.general)
+            if c.unite_commandee.camp == self.camp or c.unite_commandee.camp == 'NONE':
+                unites.append(c.unite_commandee)
         return set(unites)
     
     def nom_avec_general(self):

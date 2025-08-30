@@ -10,7 +10,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--directory', type=str, help="")
-        parser.add_argument('--tome', type=str, help="")
 
 
     def get_unite_from_odb(self, unite, data_odb):
@@ -21,13 +20,16 @@ class Command(BaseCommand):
     
 
     def convert_date(self, date):
-        date_split = date.split("/")
-        date_dt = datetime.datetime(
-            day=int(date_split[0]),
-            month=int(date_split[1]),
-            year=int(date_split[2])
-        )
-        return date_dt
+        try:
+            date_split = date.split("/")
+            date_dt = datetime.datetime(
+                day=int(date_split[0]),
+                month=int(date_split[1]),
+                year=int(date_split[2])
+            )
+            return date_dt
+        except:
+            return None
     
 
     def convert_camp(self, odb):
@@ -50,8 +52,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         directory = Path(options.get("directory"))
-        files = [i for i in os.listdir(directory) if i[-5:]==".json"]
-        for file in tqdm(files):
+        files = sorted([i for i in os.listdir(directory) if i[-5:]==".json"])
+        for i, file in tqdm(enumerate(files)):
+
+            if i >= 100:
+                break
             with open(directory/file, "r") as f:
                 data = json.load(f)
 
@@ -59,6 +64,9 @@ class Command(BaseCommand):
             unites_creees = []
 
             for odb in data["ordre_de_bataille"]:
+                date_dt = self.convert_date(odb["date"])
+                if date_dt is None:
+                    continue
                 camp = self.convert_camp(odb)
                 general = Unite.objects.create(
                     nom=odb["nom_du_general"],
@@ -66,16 +74,16 @@ class Command(BaseCommand):
                     grade=odb["grade"]
                 )
                 unites_creees.append(general)
-                date_dt = self.convert_date(odb["date"])
+                
 
-                if odb["commande"]!="None" and odb["commande"]!="null":
+                if odb["commande"]!="None" and odb["commande"]!="null" and odb["commande"] is not None:
                     unite_commandee, boolean = self.get_or_create_unite(unites_creees, odb["commande"], camp)
                     if boolean:
                         unites_creees.append(unite_commandee)
                     Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
 
                 
-                if odb["subordonne"]!="None" and odb["subordonne"]!="null":
+                if odb["subordonne"]!="None" and odb["subordonne"]!="null" and odb["subordonne"] is not None:
                     unite_commandant, boolean = self.get_or_create_unite(unites_creees, odb["subordonne"], camp)
                     if boolean:
                         unites_creees.append(unite_commandee)
@@ -84,31 +92,35 @@ class Command(BaseCommand):
         
             # Pour chaque position :
             for position_dict in data["positions"]:
-
-                unite, boolean = self.get_or_create_unite(unites_creees, position_dict["unite"], "NONE")
-                if boolean:
-                    unites_creees.append(unite_commandee)
+                if position_dict["unite"] is not None:
+                    unite, boolean = self.get_or_create_unite(unites_creees, position_dict["unite"], "NONE")
+                    if boolean:
+                        unites_creees.append(unite)
                 
                 # On récupère le lieu, sous forme de str
                 position_lieu = position_dict["lieu"]
 
                 # On récupère la date
                 date_position = self.convert_date(position_dict["date"])
+                if date_position is None:
+                    continue
 
                 # On récupère si le mouvement est planifié ou réel
                 if position_dict["planifie"]=="true":
                     position_dict["planifie"]=True
-                if position_dict["planifie"]=="false":
+                elif position_dict["planifie"]=="false":
                     position_dict["planifie"]=False
-
+                if not (position_dict["planifie"] == True or position_dict["planifie"] == "True" or position_dict["planifie"] == False or position_dict["planifie"] == "False"):
+                    position_dict["planifie"]=True
                 # On crée la position
+
                 position = Position.objects.create(
                     lieu_str=position_lieu,
                     date=date_position,
                     planifie=position_dict["planifie"],
                     justification=position_dict["details"],
                     effectif=position_dict["effectif"],
-                    source=f"Weil T.{options.get("tome")}, p.{page}"
+                    source=f"Weil T.{file[6]}, p.{page}"
                 )
                 unite.positions.add(position)
                 unite.save()

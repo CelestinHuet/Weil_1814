@@ -111,6 +111,16 @@ python manage.py flush
 python manage.py insert_lieux --file ../coordonnees.json
 python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
 python manage.py fusionner_unites
+python manage.py fusionner_unites_1bis
 python manage.py fusionner_unites_etape_2
 python manage.py associate_unites_lieux
-python manage.py create_arrows
+python manage.py controle_localisation
+
+
+
+
+# Les sources possibles d'erreurs
+
+* Mauvaise lecture des noms et des chiffres (dates notamment) par Tesseract
+* Noms de villes qui ont disparu ou modifiés (Sainte-Croix : Sainte-Croix en Plaine)
+* Lieu trop vague : nom d'une région (Savoie) ou d'une rivière (Meuse)

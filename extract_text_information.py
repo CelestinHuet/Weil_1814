@@ -82,12 +82,12 @@ for input_file in tqdm(input_files):
         contents = f"request id : {output_file} \n Timestamp : {time.time()}" + f.read()
 
     nb_requetes += 1
-    if nb_requetes>101:
+    if nb_requetes>251:
         break
         
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-pro", 
+            model="gemini-2.5-flash", 
             contents=contents,
             config={
                 "response_mime_type": "application/json",
@@ -110,4 +110,4 @@ for input_file in tqdm(input_files):
         print(response.text)
         print(response.candidates[0].content.parts)
 
-    time.sleep(60)
+    time.sleep(30)

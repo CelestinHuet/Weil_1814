@@ -20,7 +20,9 @@ nouveaux_noms = {
     "Brienne":["Brienne-le-Château"],
     "Saint-Urbain":["Saint-Urbain-Maconcourt"],
     "Thaon":["Thaon-les-Vosges"],
-    "Perthes":["Perthes-lès-Brienne"]
+    "Perthes":["Perthes-lès-Brienne"],
+    "Sainte-Croix":["Sainte-Croix-en-Plaine"],
+    "Saint-Laurent":["Epinal"]
 }
 
 

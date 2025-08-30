@@ -143,44 +143,17 @@
           'text-halo-width': 1
         }
       });
-      // Couche avec les flèches de déplacements
-      map.addSource('trajets', {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: []
-        }
-      });
-      map.addLayer({
-        id: 'arrows',
-        type: 'line',
-        source: 'trajets',
-        paint: {
-          'line-color': circle_color,   // Rouge
-          'line-width': 1,
-          'line-opacity': 0.8
-        }
-      });
     });
 
     // Pop-up sur les positions
     map.on('click', 'unit-points', (e) => {
       const coordinates = e.features[0].geometry.coordinates.slice();
-      const props = e.features[0].properties;
+      const props = e.features[0].properties;      
 
-      const popupContent = `
-        <strong>${props.unite}</strong>
-        <br>${props.date}<br>
-        <br>${props.lieu}<br>
-        <br>Effectif: ${props.effectif}<br>
-        <br>Planifié: ${props.planifie}<br>
-        <br>Extrait: ${props.justification}<br>
-        <br>Source: ${props.source}<br>
-      `;
 
       new maplibregl.Popup()
         .setLngLat(coordinates)
-        .setHTML(popupContent)
+        .setHTML(props.popup)
         .addTo(map);
     });
 
@@ -198,7 +171,6 @@
           if (map.getSource('positions')) {
             map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
-            map.getSource('trajets').setData(data["arrows"]);                        
           }
         })
       });
@@ -216,10 +188,9 @@
         fetch(`/positions_par_date?date=${selectedDate}`)
         .then(res => res.json())
         .then(data => {
-          if (map.getSource('positions')) {
+          if (map.getSource('positions')) {            
             map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
-            map.getSource('trajets').setData(data["arrows"]);
           }
         })
         

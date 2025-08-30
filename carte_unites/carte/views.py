@@ -14,8 +14,16 @@ class Carte(TemplateView):
 
 def liste_unites(request):
     unites = Unite.objects.all()
-    data = [{'id': u.id, 'text': u.nom_avec_general()} for u in unites]
+    data = [{'id': u.id, 'text': u.nom_avec_general()} for u in unites if u.is_general()]
     return JsonResponse(data, safe=False)
+
+
+
+def position_in_list(list, position, unite):
+    for feature in list:
+        if feature["properties"]["unite"] == unite.nom and feature["properties"]["lieu"] == position.lieu.nom and feature["properties"]["date"] == position.date:
+            return feature
+    return None
 
 
 def positions_par_date(request):
@@ -38,44 +46,56 @@ def positions_par_date(request):
             continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
-            position = [pos.lieu.longitude, pos.lieu.latitude]
-            while position in positions_coords:
-                position[0] += pas
-            features.append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": position
-                },
-                
-                "properties": {
-                    "unite":unite.nom,
-                    "date":pos.date,
-                    "lieu":pos.lieu.nom,
-                    "planifie":pos.planifie,
-                    "justification":pos.justification,
-                    "effectif":pos.effectif,
-                    "source":pos.source,
-                    "camp":unite.camp
-                }
-            })
-            positions_coords.append(position)
+
+            feature = position_in_list(features, pos, unite)
+            if feature is not None:
+                feature["properties"]["planifie"].append(pos.planifie)
+                feature["properties"]["justification"].append(pos.justification)
+                feature["properties"]["effectif"].append(pos.effectif)
+                feature["properties"]["source"].append(pos.source)
+            else:
+                position = [pos.lieu.longitude, pos.lieu.latitude]
+                while position in positions_coords:
+                    position[0] += pas
+                features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": position
+                    },
+                    
+                    "properties": {
+                        "unite":unite.nom,
+                        "date":pos.date,
+                        "lieu":pos.lieu.nom,
+                        "planifie":[pos.planifie],
+                        "justification":[pos.justification],
+                        "effectif":[pos.effectif],
+                        "source":[pos.source],
+                        "camp":unite.camp
+                    }
+                })
+                positions_coords.append(position)
     
-    
-    arrows = Arrow.objects.filter(date=date_dt)
-    features_arrows = []
-    for arrow in arrows:
-        features_arrows.append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "LineString",
-                    "coordinates": [[arrow.lieu_depart.longitude, arrow.lieu_depart.latitude],[arrow.lieu_arrivee.longitude, arrow.lieu_arrivee.latitude]]
-                },
-                
-                "properties": {
-                    "camp":arrow.unite.camp
-                }
-            })
+
+    for feature in features:
+        props = feature["properties"]
+        popup = f"""
+        <strong>{props["unite"]}</strong>
+        <br>{props["date"]}<br>
+        <br>{props["lieu"]}<br>
+        Extraits :
+        """
+
+        for i in range(len(props["justification"])):
+            popup += f"""
+            <ul> - {props["justification"][i]} ({props["source"][i]}).
+            """
+            if props["planifie"][i]:
+                popup += "<strong> Objectif</strong>"
+            popup += "</ul>"
+        feature["properties"]["popup"] = popup
+        feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
 
     return JsonResponse({
@@ -83,10 +103,6 @@ def positions_par_date(request):
                 "type": "FeatureCollection",
                 "features": features
             },
-            "arrows":{
-                "type": "FeatureCollection",
-                "features": features_arrows
-            }
         })
 
 
@@ -106,50 +122,62 @@ def positions_par_unite(request):
         positions += u.positions.all()
 
     features = []
+    positions = sorted(positions, key=lambda x : x.date)
     for pos in positions:
         if len(pos.unites.all())==0:
             continue
         unite:Unite = pos.unites.all()[0]
         if pos.lieu is not None:
-            position = [pos.lieu.longitude, pos.lieu.latitude]
-            while position in positions_coords:
-                position[0] += pas
-            features.append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": position
-                },
-                
-                "properties": {
-                    "unite":unite.nom,
-                    "date":pos.date,
-                    "lieu":pos.lieu.nom,
-                    "planifie":pos.planifie,
-                    "justification":pos.justification,
-                    "effectif":pos.effectif,
-                    "source":pos.source,
-                    "camp":unite.camp
-                }
-            })
+            
+            feature = position_in_list(features, pos, unite)
+            if feature is not None:
+                feature["properties"]["planifie"].append(pos.planifie)
+                feature["properties"]["justification"].append(pos.justification)
+                feature["properties"]["effectif"].append(pos.effectif)
+                feature["properties"]["source"].append(pos.source)
+            else:
+                position = [pos.lieu.longitude, pos.lieu.latitude]
+                while position in positions_coords:
+                    position[0] += pas
+                features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": position
+                    },
+                    
+                    "properties": {
+                        "unite":unite.nom,
+                        "date":pos.date,
+                        "lieu":pos.lieu.nom,
+                        "planifie":[pos.planifie],
+                        "justification":[pos.justification],
+                        "effectif":[pos.effectif],
+                        "source":[pos.source],
+                        "camp":unite.camp
+                    }
+                })
+                positions_coords.append(position)
+    
 
-    arrows = []
-    for unite in unites:
-        arrows += list(Arrow.objects.filter(unite=unite))
-    arrows = set(arrows)
-    features_arrows = []
-    for arrow in arrows:
-        features_arrows.append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "LineString",
-                    "coordinates": [[arrow.lieu_depart.longitude, arrow.lieu_depart.latitude],[arrow.lieu_arrivee.longitude, arrow.lieu_arrivee.latitude]]
-                },
-                
-                "properties": {
-                    "camp":arrow.unite.camp
-                }
-            })
+    for feature in features:
+        props = feature["properties"]
+        popup = f"""
+        <strong>{props["unite"]}</strong>
+        <br>{props["date"]}<br>
+        <br>{props["lieu"]}<br>
+        Extraits :
+        """
+
+        for i in range(len(props["justification"])):
+            popup += f"""
+            <ul>{props["justification"][i]} ({props["source"][i]})</ul>
+            """
+            if props["planifie"][i]:
+                popup += "<b> Objectif</b>"
+            popup += "</ul>"
+        feature["properties"]["popup"] = popup
+        feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
 
     return JsonResponse({
@@ -157,8 +185,4 @@ def positions_par_unite(request):
                 "type": "FeatureCollection",
                 "features": features
             },
-            "arrows":{
-                "type": "FeatureCollection",
-                "features": features_arrows
-            }
         })

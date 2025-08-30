@@ -31,7 +31,8 @@ def recoller_paragraphes(repertoire_cible):
         nombres = re.findall(r'\d+', os.path.basename(nom_fichier))
         return int(nombres[0]) if nombres else 0
 
-    fichiers_txt.sort(key=cle_de_tri_numerique)
+    fichiers_txt.sort()
+
     
     print("Fichiers qui seront traités (dans l'ordre) :")
     for f in fichiers_txt:

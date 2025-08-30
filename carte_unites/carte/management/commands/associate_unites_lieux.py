@@ -199,16 +199,28 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         done = []
+
+        # On parcourt chaque unité
         for unite in tqdm(Unite.objects.all()):
             if unite in done:
                 continue
+
+            # L'unité doit être un général
+            if not unite.is_general():
+                continue
             
+            # On récupère les unités sous ses ordres
             unites = unite.get_equivalence()
 
+            # On récupère toutes les positions
             positions = []
             for u in unites:
                 positions += u.positions.all()
 
+            if len(positions)<=1:
+                print(unite)
+
+            # On trie les positions par date
             positions = sorted(positions, key=lambda x: x.date)
 
             list_lieu_d = List_Lieu_d(positions)
