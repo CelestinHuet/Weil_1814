@@ -217,9 +217,6 @@ class Command(BaseCommand):
             for u in unites:
                 positions += u.positions.all()
 
-            if len(positions)<=1:
-                print(unite)
-
             # On trie les positions par date
             positions = sorted(positions, key=lambda x: x.date)
 
