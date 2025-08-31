@@ -21,7 +21,7 @@ for file in files:
     {texte_notes}
     \"\"\"
     Réponds uniquement en JSON. 
-    Le json doit contenir trois champs : "positions", "date" et "ordre_de_bataille".
+    Le json doit contenir quatre champs : "positions", "date", "ordre_de_bataille" et "combat".
     Dans le champ "positions", pour chaque mouvement ou position de troupe identifié, donne un dictionnaire avec les clés :
     - "unite". Je ne veux que le nom du général de l'unité ou sinon le numéro de du corps d'armée ou de la division. Par exemple, je ne veux pas "corps de Sacken" mais "Sacken" 
     - "lieu". Si l'unité se trouve entre deux villes, mets un point-virgule entre les deux noms de ville. Si l'unité se trouve dans deux villes différentes à la fois, crée deux dictionnaires. Je ne veux que des noms de localités, pas de localisation vague comme "dans ses cantonnements" ou "le long du fleuve".
@@ -40,6 +40,11 @@ for file in files:
     - "subordonne" : s’il est subordonné à un supérieur, indique le nom de ce supérieur ou l'unité commandée par ce supérieur
     - "camp" : Répond soit par "France", soit par "Coalition", soit par "None" si tu ne sais pas. Utilise en priorité le texte. Tu as le droit d'utiliser tes connaissances sur la Campagne de France de 1814. Pour rappel, "Coalition" regroupe les forces coalisées opposées à Napoléon (russes, prussiens, autrichiens, bavarois, wurtembourgeois, saxons, suédois...) 
     IMPORTANT : ta réponse doit être un JSON **valide**. Pas d'explications ni de texte hors JSON.
+
+    Dans le champ "combat", pour chaque combat ou bataille (je ne veux pas d'engagements mineurs comme une escarmouche) entre deux armées ennemies, identifie :
+    - "nom de l'affrontement"
+    - "date". Si la date n'est pas précisée, mets None. La date doit être de la forme jj/mm/aaaa. Si l'année n'est pas précisée, sache que les dates sont comprises entre décembre 1813 et mai 1814. 
+    - "lieu". Si l'affrontement se déroule dans plusieurs lieux, mets un point-virgule entre les noms de lieux.
     """
 
     with open(f"{prompt_dir}/{file}", "w") as f:
