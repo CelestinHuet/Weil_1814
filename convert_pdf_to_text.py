@@ -1,27 +1,35 @@
 import os
 from tqdm import tqdm
+import argparse
 
 
 
-tome = 4
+parser = argparse.ArgumentParser(description="")
+parser.add_argument('--input_pdf')
+parser.add_argument('--begin', type=int)
+parser.add_argument('--end', type=int)
+args = parser.parse_args()
 
-document = f"Weil_T{tome}.pdf"
+document = args.input_pdf
 
-images_dir = f"images_T{tome}"
+images_dir = os.path.basename(document).replace(".pdf", "")
 os.makedirs(images_dir, exist_ok=True)
 
 text_dir = "text"
 os.makedirs(text_dir, exist_ok=True)
 
-begin = 6
-end = 464
+begin = args.begin
+end = args.end
 
 for i in tqdm(range(begin, end+1)):
-    commande = f"pdftoppm -f {i} -l {i} -png {document} {images_dir}/Weil"
+    commande = f"pdftoppm -f {i} -l {i} -png {document} {images_dir}/{images_dir}"
     os.system(commande)
 
     nb_page = str(i)
-    nb_page = "0"*(3-len(nb_page)) + nb_page
+    if end < 100:
+        nb_page = "0"*(2-len(nb_page)) + nb_page
+    else:
+        nb_page = "0"*(3-len(nb_page)) + nb_page
 
-    commande = f"tesseract {images_dir}/Weil-{nb_page}.png {text_dir}/Weil_T{tome}-{nb_page} -l fra"
+    commande = f"tesseract {images_dir}/{images_dir}-{nb_page}.png {text_dir}/{images_dir}-{nb_page} -l fra"
     os.system(commande)
