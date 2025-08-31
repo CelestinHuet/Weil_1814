@@ -93,6 +93,8 @@ for element in list_dates:
         for odb in data["ordre_de_bataille"]:
             odb["date"] = current_date
 
+        data["date"] = date_remplacant
+
     with open(output_dir/filename, "w") as f:
         json.dump(data, f)
 
