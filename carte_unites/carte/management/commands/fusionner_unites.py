@@ -1,6 +1,14 @@
 from django.core.management.base import BaseCommand
 from carte.models import Unite, Subordonne, Commande
 from tqdm import tqdm
+import logging
+
+logging.basicConfig(
+    filename='fusionner_unites.log',           # Nom du fichier de log
+    filemode='w',                 # 'a' pour ajouter (append), 'w' pour écraser (write)
+    level=logging.INFO,           # Niveau de log minimum à enregistrer
+    format='%(asctime)s - %(levelname)s - %(message)s' # Format du message de log
+)
 
 class Command(BaseCommand):
 
@@ -51,6 +59,9 @@ class Command(BaseCommand):
         for nom_unite in tqdm(unites):
             # On récupère toutes les unités qui ont le même nom
             unites_noms = list(Unite.objects.filter(nom=nom_unite))
+
+            if len(unites_noms)<2:
+                continue
             
             
             # Si l'unité est un général
@@ -65,6 +76,7 @@ class Command(BaseCommand):
                     grade=new_grade,
                     camp=new_camp
                 )
+                logging.info(f"\n On crée une nouvelle unité : {new_unite.nom}, pk = {new_unite.pk}")
 
                 unites_delete = []
             
@@ -95,6 +107,7 @@ class Command(BaseCommand):
                 
                 
                 for u in unites_delete:
+                    logging.info(f"\n On supprime l'unité {u.nom}, pk = {u.pk}")
                     u.delete()
                 
 

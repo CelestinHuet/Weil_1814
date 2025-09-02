@@ -5,6 +5,15 @@ from carte.models import Lieu, Unite, Position, Subordonne, Commande
 from pathlib import Path
 import datetime
 from tqdm import tqdm
+import logging
+
+
+logging.basicConfig(
+    filename='insert_unites.log',           # Nom du fichier de log
+    filemode='w',                 # 'a' pour ajouter (append), 'w' pour écraser (write)
+    level=logging.INFO,           # Niveau de log minimum à enregistrer
+    format='%(asctime)s - %(levelname)s - %(message)s' # Format du message de log
+)
 
 class Command(BaseCommand):
 
@@ -46,7 +55,9 @@ class Command(BaseCommand):
         for unite in unites:
             if unite.nom==nom:
                 return unite, False
-        return Unite.objects.create(nom=nom, camp=camp), True
+        u = Unite.objects.create(nom=nom, camp=camp)
+        logging.info(f"On ajoute Unite {u.nom} : pk = {u.pk}")
+        return u, True
 
 
 
@@ -73,6 +84,7 @@ class Command(BaseCommand):
                     camp=camp,
                     grade=odb["grade"]
                 )
+                logging.info(f"On ajoute Unite {general.nom} : pk = {general.pk}")
                 unites_creees.append(general)
                 
 
@@ -80,14 +92,16 @@ class Command(BaseCommand):
                     unite_commandee, boolean = self.get_or_create_unite(unites_creees, odb["commande"], camp)
                     if boolean:
                         unites_creees.append(unite_commandee)
-                    Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
+                    c = Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
+                    logging.info(f"On ajoute Commande {c.pk} : {unite_commandee} {unite_commandee.pk}, {general} {general.pk}")
 
                 
                 if odb["subordonne"]!="None" and odb["subordonne"]!="null" and odb["subordonne"] is not None:
                     unite_commandant, boolean = self.get_or_create_unite(unites_creees, odb["subordonne"], camp)
                     if boolean:
                         unites_creees.append(unite_commandee)
-                    Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
+                    s = Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
+                    logging.info(f"On ajoute Subordonne {s.pk} : {unite_commandant} {unite_commandant.pk}, {general} {general.pk}")
 
         
             # Pour chaque position :
@@ -122,5 +136,6 @@ class Command(BaseCommand):
                     effectif=position_dict["effectif"],
                     source=f"Weil T.{file[6]}, p.{page}"
                 )
+                logging.info(f"On crée la position {position.pk} : {position.lieu_str}, {unite}")
                 unite.positions.add(position)
                 unite.save()

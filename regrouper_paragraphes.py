@@ -45,6 +45,9 @@ def recoller_paragraphes(repertoire_cible):
     for i in range(len(fichiers_txt) - 1):
         fichier_actuel_path = fichiers_txt[i]
         fichier_suivant_path = fichiers_txt[i+1]
+        
+        if fichier_actuel_path.split("-")[0]!=fichier_suivant_path.split("-")[0]:
+            continue
 
         with open(fichier_actuel_path, 'r', encoding='utf-8') as f:
             contenu_actuel = f.read()

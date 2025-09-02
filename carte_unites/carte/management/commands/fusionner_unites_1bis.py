@@ -1,6 +1,14 @@
 from django.core.management.base import BaseCommand
 from carte.models import Unite, Subordonne, Commande
 import difflib
+import logging
+
+logging.basicConfig(
+    filename='fusionner_unites_1bis.log',           # Nom du fichier de log
+    filemode='w',                 # 'a' pour ajouter (append), 'w' pour écraser (write)
+    level=logging.INFO,           # Niveau de log minimum à enregistrer
+    format='%(asctime)s - %(levelname)s - %(message)s' # Format du message de log
+)
 
 class Command(BaseCommand):
 
@@ -52,6 +60,7 @@ class Command(BaseCommand):
                     grade=unite_remplacant.grade,
                     camp=unite_remplacant.camp
                 )
+                logging.info(f"\n On crée une nouvelle unité : {new_unite.nom}, pk = {new_unite.pk}")
             
                 # On remplace toutes les unités par la nouvelle unité
                 for u in unites_noms:
@@ -76,5 +85,8 @@ class Command(BaseCommand):
                         c.unite_commandee = new_unite
                         c.save()
 
+                logging.info(f"\n On supprime l'unité {unite_remplacee.nom}, pk = {unite_remplacee.pk}")
+                logging.info(f"\n On supprime l'unité {unite_remplacant.nom}, pk = {unite_remplacant.pk}")
                 unite_remplacee.delete()
                 unite_remplacant.delete()
+                

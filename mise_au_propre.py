@@ -36,6 +36,7 @@ for input_file in tqdm(input_files):
         continue
    
    
+    print(input_file)
     with open(input_dir/input_file, "r") as f:
         contents = f.read()
 

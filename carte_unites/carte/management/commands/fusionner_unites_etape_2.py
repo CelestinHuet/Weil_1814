@@ -2,6 +2,15 @@ from django.core.management.base import BaseCommand
 from carte.models import Unite, Subordonne, Commande
 from tqdm import tqdm
 
+import logging
+
+logging.basicConfig(
+    filename='fusionner_etape_2.log',           # Nom du fichier de log
+    filemode='w',                 # 'a' pour ajouter (append), 'w' pour écraser (write)
+    level=logging.INFO,           # Niveau de log minimum à enregistrer
+    format='%(asctime)s - %(levelname)s - %(message)s' # Format du message de log
+)
+
 class Command(BaseCommand):
 
 
@@ -94,6 +103,7 @@ class Command(BaseCommand):
                             grade=new_grade,
                             camp=new_camp
                         )
+                        logging.info(f"\n On crée une nouvelle unité : {new_unite.nom}, pk = {new_unite.pk}")
 
                         print(f"On fusionne {fusion}. La nouvelle unité est {new_unite}")
                     
@@ -124,4 +134,5 @@ class Command(BaseCommand):
                         delete += fusion
                         
         for u in delete:
+            logging.info(f"\n On supprime l'unité {u.nom}, pk = {u.pk}")
             u.delete()
