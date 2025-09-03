@@ -93,6 +93,12 @@ for element in list_dates:
         for odb in data["ordre_de_bataille"]:
             odb["date"] = current_date
 
+        if not "combat" in data.keys():
+            continue
+        for combat in data["combat"]:
+            if not date_valide(combat["date"]):
+                combat["date"] = current_date
+
         data["date"] = date_remplacant
 
     with open(output_dir/filename, "w") as f:

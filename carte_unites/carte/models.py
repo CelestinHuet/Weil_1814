@@ -24,7 +24,7 @@ class Lieu(models.Model):
 
 
 class Position(models.Model):
-    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True)
+    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True, related_name="position")
     lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
     planifie = models.BooleanField(default=False)
@@ -67,6 +67,24 @@ class Unite(models.Model):
                 unites.append(c.unite_commandee)
         return set(unites)
     
+#    def get_ordre_de_bataille(self):
+#        print(f"self : {self}, pk : {self.pk}")
+#        a_sous_ses_ordres = []
+#        subordonnee = self.subordonnee_a.all()
+#        print(subordonnee)
+#        for s in subordonnee:
+#            a_sous_ses_ordres.append(s.unite_commandant)
+#            print(s.unite_commandant.pk)
+#        print(a_sous_ses_ordres)
+#
+#        a_sous_ses_ordres_2 = []
+#        subordonnee = self.commande_a.all()
+#        print(subordonnee)
+#        for s in subordonnee:
+#            a_sous_ses_ordres_2.append(s.unite_subordonnee)
+#        print(a_sous_ses_ordres_2)
+
+    
     def nom_avec_general(self):
         generaux = list(self.est_dirigee_par.all())
         if len(generaux)>=1:
@@ -95,8 +113,16 @@ class Commande(models.Model):
         return f"{self.general} commande {self.unite_commandee} le {self.date}"
     
 
-class Arrow(models.Model):
+class Combat(models.Model):
+    nom = models.CharField(max_length=100)
+    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True)
+    lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
-    lieu_depart = models.ForeignKey(Lieu, on_delete=models.CASCADE, related_name='lieu_depart_arrow')
-    lieu_arrivee = models.ForeignKey(Lieu, on_delete=models.CASCADE, related_name='lieu_arrivee_arrow')
-    unite = models.ForeignKey(Unite, on_delete=models.CASCADE, related_name='unite_arrow')
+
+    def __str__(self):
+        return f"{self.nom} ({self.date})"
+
+
+
+
+

@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Lieu, Position, Unite, Subordonne, Commande, Arrow
+from .models import Lieu, Position, Unite, Subordonne, Commande, Combat
 
 admin.site.register(Lieu)
 admin.site.register(Position)
-admin.site.register(Arrow)
+admin.site.register(Combat)
 
 
 

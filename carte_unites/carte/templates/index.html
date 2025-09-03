@@ -201,6 +201,7 @@
     const nav = new maplibregl.NavigationControl();
     map.addControl(nav, 'top-right');
 
+    // Couleur des cercles pour afficher les unités sur la carte
     const circle_color = [
       'match',
       ['get', 'camp'],
@@ -211,8 +212,13 @@
 
     // Instanciation des couches
     map.addControl(scale);
-    // Couche position
-    map.on('load', () => {
+    map.on('load', async () => {
+      
+      // On ajoute l'icône pour les combats
+      image = await map.loadImage('/static/icons/lieu_combat.png');
+      map.addImage('icone_combat', image.data);
+      
+      // On ajoute la couche des positions
       map.addSource('positions', {
         type: 'geojson',
         data: {
@@ -220,6 +226,17 @@
           features: []
         }
       });
+
+      // On ajoute la couche des combats
+      map.addSource('combats', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+
+      // Symboles points pour le placement des unités
       map.addLayer({
         id: 'unit-points',
         type: 'circle',
@@ -231,6 +248,8 @@
           'circle-stroke-color': '#fff'
         }
       });
+
+      // Labels avec les dates ou les noms d'unités
       map.addLayer({
         id: 'unites-labels',
         type: 'symbol',
@@ -246,14 +265,34 @@
           'text-halo-width': 1
         }
       });
+
+      // Icones pour les batailles
+      map.addLayer({
+          id: 'batailles-layer',
+          type: 'symbol',
+          source: 'combats',
+          layout: {
+            'icon-image': 'icone_combat',
+            'icon-size': 0.05, // ajuste la taille
+            'icon-allow-overlap': true
+          }
+      });
     });
 
     // Pop-up sur les positions
     map.on('click', 'unit-points', (e) => {
       const coordinates = e.features[0].geometry.coordinates.slice();
       const props = e.features[0].properties;      
+      new maplibregl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(props.popup)
+        .addTo(map);
+    });
 
-
+    // Pop-up sur les batailles
+    map.on('click', 'batailles-layer', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const props = e.features[0].properties;      
       new maplibregl.Popup()
         .setLngLat(coordinates)
         .setHTML(props.popup)
@@ -282,28 +321,28 @@
     document.getElementById('dateSelect').addEventListener('change', function () {
       const selectedDate = this.value;
       updateDataDate(selectedDate);
-      
-      });
+    });
 
 
 
-      function updateDataDate(selectedDate) {
-        fetch(`/positions_par_date?date=${selectedDate}`)
-        .then(res => res.json())
-        .then(data => {
-          if (map.getSource('positions')) {            
-            map.getSource('positions').setData(data["position"]);
-            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
-          }
-        })
-        
-      }
+    function updateDataDate(selectedDate) {
+      fetch(`/positions_par_date?date=${selectedDate}`)
+      .then(res => res.json())
+      .then(data => {
+        if (map.getSource('positions')) {   
+          console.log(data);
+                   
+          map.getSource('positions').setData(data["position"]);
+          map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
+          map.getSource('combats').setData(data["combats"]);
+        }
+      })
+    }
 
     
-      // Filtre sur l'état "planifié" des positions
-      document.getElementById('filters').addEventListener('change', (e) => {
+    // Filtre sur l'état "planifié" des positions
+    document.getElementById('filters').addEventListener('change', (e) => {
       const value = document.getElementById("planifieSelect").checked;     
-
       // Si "Tous", on retire le filtre
       if  (value) {
         map.setFilter('unit-points', ['==', ['get', 'planifie'], false]);
@@ -333,9 +372,6 @@
     });
 
 
-
-
-
     function decrementDate() {
         const input = document.getElementById('dateSelect');
         if (input.value) {
@@ -353,19 +389,19 @@
 
     // Increment date
     function incrementDate() {
-    const input = document.getElementById('dateSelect');
-    if (input.value) {
-        const currentDate = new Date(input.value);
-        currentDate.setDate(currentDate.getDate() + 1); // ajoute 1 jour
-        input.value = currentDate.toISOString().split('T')[0]; // format YYYY-MM-DD
-    } else {
-        // Si aucune date sélectionnée, mettre aujourd’hui + 1
-        const today = new Date();
-        today.setDate(today.getDate() + 1);
-        input.value = today.toISOString().split('T')[0];
+      const input = document.getElementById('dateSelect');
+      if (input.value) {
+          const currentDate = new Date(input.value);
+          currentDate.setDate(currentDate.getDate() + 1); // ajoute 1 jour
+          input.value = currentDate.toISOString().split('T')[0]; // format YYYY-MM-DD
+      } else {
+          // Si aucune date sélectionnée, mettre aujourd’hui + 1
+          const today = new Date();
+          today.setDate(today.getDate() + 1);
+          input.value = today.toISOString().split('T')[0];
+      }
+      updateDataDate(input.value);
     }
-    updateDataDate(input.value);
-  }
 
     
 

@@ -10,7 +10,14 @@ text/*
 *.json
 *.pdf
 *.txt
-*.png
+Grouchy/*
+Hiller/*
+images/*
+images_T2/*
+images_T3/*
+images_T4/*
+Mormant/*
+Petiet/*
 *.pyc
 *.sqlite3
 

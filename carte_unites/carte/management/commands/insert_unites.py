@@ -1,7 +1,7 @@
 import json
 import os
 from django.core.management.base import BaseCommand
-from carte.models import Lieu, Unite, Position, Subordonne, Commande
+from carte.models import Unite, Position, Subordonne, Commande, Combat
 from pathlib import Path
 import datetime
 from tqdm import tqdm
@@ -134,8 +134,24 @@ class Command(BaseCommand):
                     planifie=position_dict["planifie"],
                     justification=position_dict["details"],
                     effectif=position_dict["effectif"],
-                    source=f"Weil T.{file[6]}, p.{page}"
+                    source=file.replace("-", " p.").replace(".json", "")
                 )
                 logging.info(f"On crée la position {position.pk} : {position.lieu_str}, {unite}")
                 unite.positions.add(position)
                 unite.save()
+
+
+            if not "combat" in data.keys():
+                continue
+            for combat_dict in data["combat"]:
+
+                nom = combat_dict["nom_affrontement"]
+                position_lieu = combat_dict["lieu"]
+                date_combat = self.convert_date(combat_dict["date"])
+                combat, created = Combat.objects.get_or_create(
+                    nom=nom,
+                    date=date_combat,
+                    lieu_str=position_lieu
+                )
+                if created:
+                    logging.info(f"On crée le combat {combat.pk} : {combat}")

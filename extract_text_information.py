@@ -51,19 +51,34 @@ class OrdreBataille(BaseModel):
             "subordonne":self.subordonne,
             "camp":self.camp,
         }
+    
+
+class Combat(BaseModel):
+    nom_affrontement:str
+    date:str
+    lieu:str
+
+    def to_dict(self):
+        return {
+            "nom_affrontement":self.nom_affrontement,
+            "lieu":self.lieu,
+            "date":self.date,
+        }
 
 
 class Schema(BaseModel):
     positions:List[Position]
     date:str
     ordre_de_bataille:List[OrdreBataille]
+    combat:List[Combat]
 
     def to_dict(self):
 
         return {
             "positions":[p.to_dict() for p in self.positions],
             "date":self.date,   
-            "ordre_de_bataille":[ob.to_dict() for ob in self.ordre_de_bataille]
+            "ordre_de_bataille":[ob.to_dict() for ob in self.ordre_de_bataille],
+            "combat":[ob.to_dict() for ob in self.combat]
         }
 
 
@@ -76,6 +91,9 @@ for input_file in tqdm(input_files):
     output_file = input_file.replace(".txt", ".json")
     output_file_path = output_dir/output_file
     if os.path.isfile(output_file_path):
+        continue
+
+    if "Hiller" in input_file:
         continue
    
     with open(input_dir/input_file, "r") as f:

@@ -22,7 +22,10 @@ nouveaux_noms = {
     "Thaon":["Thaon-les-Vosges"],
     "Perthes":["Perthes-lès-Brienne"],
     "Sainte-Croix":["Sainte-Croix-en-Plaine"],
-    "Saint-Laurent":["Epinal"]
+    "Saint-Laurent":["Epinal"],
+    "Bray":["Bray-sur-Seine"],
+    "Mouy":["Mouy-sur-Seine"],
+    "Nogent":["Nogent-sur-Seine"]
 }
 
 
@@ -33,6 +36,13 @@ def get_lieux():
         with open(os.path.join("resultats", file), 'r') as f:
             data = json.load(f)
             for d in data["positions"]:
+                positions_split = d["lieu"].split(";")
+                for p in positions_split:
+                    lieux.append(p)
+            
+            if not "combat" in data.keys():
+                continue
+            for d in data["combat"]:
                 positions_split = d["lieu"].split(";")
                 for p in positions_split:
                     lieux.append(p)

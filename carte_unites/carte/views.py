@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from carte.models import Unite, Position, Arrow
+from carte.models import Unite, Position, Combat
 from django.http import JsonResponse
 from datetime import datetime
 
@@ -97,26 +97,53 @@ def positions_par_date(request):
         feature["properties"]["popup"] = popup
         feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
+    combats_features = []
+    combats = Combat.objects.filter(date=date_dt)
+    for combat in combats:
+        if combat.lieu is not None:
+            combats_features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [combat.lieu.longitude, combat.lieu.latitude]
+                    },
+                    
+                    "properties": {
+                        "nom":combat.nom,
+                        "date":combat.date,
+                        "lieu":combat.lieu_str
+                    }
+                })
+            
+    for combat_feature in combats_features:
+        popup = f"""
+        <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
+        """
+        combat_feature["properties"]["popup"] = popup
 
     return JsonResponse({
             "position":{
                 "type": "FeatureCollection",
                 "features": features
             },
+            "combats":{
+                "type": "FeatureCollection",
+                "features": combats_features
+            },
         })
 
 
 def positions_par_unite(request):
-    unite = request.GET.get('unite')
-    if not unite:
+    unite_0 = request.GET.get('unite')
+    if not unite_0:
         return JsonResponse({'error': 'Unité manquante'}, status=400)
     
-    unite = Unite.objects.get(id=unite)
+    unite_0 = Unite.objects.get(id=unite_0)
 
     pas = 0.005
     positions_coords = []
 
-    unites = unite.get_equivalence()
+    unites = unite_0.get_equivalence()
     positions = []
     for u in unites:
         positions += u.positions.all()
@@ -178,6 +205,9 @@ def positions_par_unite(request):
             popup += "</ul>"
         feature["properties"]["popup"] = popup
         feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
+
+
+    #unite_0.get_ordre_de_bataille()
 
 
     return JsonResponse({
