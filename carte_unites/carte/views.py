@@ -149,6 +149,7 @@ def positions_par_unite(request):
         positions += u.positions.all()
 
     features = []
+    combats_features = []
     positions = sorted(positions, key=lambda x : x.date)
     for pos in positions:
         if len(pos.unites.all())==0:
@@ -185,7 +186,24 @@ def positions_par_unite(request):
                     }
                 })
                 positions_coords.append(position)
-    
+
+            combats = pos.lieu.lieu_combat.all()
+            for combat in combats:
+                if combat.date==pos.date:
+                    combats_features.append({
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [combat.lieu.longitude, combat.lieu.latitude]
+                        },
+                        
+                        "properties": {
+                            "nom":combat.nom,
+                            "date":combat.date,
+                            "lieu":combat.lieu_str
+                        }
+                    })
+
 
     for feature in features:
         props = feature["properties"]
@@ -207,6 +225,11 @@ def positions_par_unite(request):
         feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
 
+    for combat_feature in combats_features:
+        popup = f"""
+        <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
+        """
+        combat_feature["properties"]["popup"] = popup
     #unite_0.get_ordre_de_bataille()
 
 
@@ -214,5 +237,9 @@ def positions_par_unite(request):
             "position":{
                 "type": "FeatureCollection",
                 "features": features
+            },
+            "combats":{
+                "type": "FeatureCollection",
+                "features": combats_features
             },
         })

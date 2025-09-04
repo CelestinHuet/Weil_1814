@@ -115,7 +115,7 @@ class Commande(models.Model):
 
 class Combat(models.Model):
     nom = models.CharField(max_length=100)
-    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True)
+    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True, related_name="lieu_combat")
     lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
 

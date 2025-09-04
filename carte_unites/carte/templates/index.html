@@ -313,6 +313,7 @@
           if (map.getSource('positions')) {
             map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
+            map.getSource('combats').setData(data["combats"]);
           }
         })
       });
