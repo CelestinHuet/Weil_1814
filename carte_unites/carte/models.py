@@ -67,22 +67,19 @@ class Unite(models.Model):
                 unites.append(c.unite_commandee)
         return set(unites)
     
-#    def get_ordre_de_bataille(self):
-#        print(f"self : {self}, pk : {self.pk}")
-#        a_sous_ses_ordres = []
-#        subordonnee = self.subordonnee_a.all()
-#        print(subordonnee)
-#        for s in subordonnee:
-#            a_sous_ses_ordres.append(s.unite_commandant)
-#            print(s.unite_commandant.pk)
-#        print(a_sous_ses_ordres)
-#
-#        a_sous_ses_ordres_2 = []
-#        subordonnee = self.commande_a.all()
-#        print(subordonnee)
-#        for s in subordonnee:
-#            a_sous_ses_ordres_2.append(s.unite_subordonnee)
-#        print(a_sous_ses_ordres_2)
+    def get_ordre_de_bataille(self):
+        est_commande_par = list(self.subordonnee_a.all()) + list(self.est_dirigee_par.all())
+        est_commande_par = sorted(est_commande_par, key=lambda x:x.date)
+        est_commande_par = [i.str_commande_par() for i in est_commande_par]
+
+        a_sous_ses_ordres = []
+        a_sous_ses_ordres = list(self.commande_a.all()) + list(self.dirige.all())
+        a_sous_ses_ordres = sorted(a_sous_ses_ordres, key=lambda x:x.date)
+        a_sous_ses_ordres = [i.str_commande() for i in a_sous_ses_ordres]
+        return {
+            "est_commande_par":est_commande_par,
+            "a_sous_ses_ordres":a_sous_ses_ordres
+        }
 
     
     def nom_avec_general(self):
@@ -101,6 +98,12 @@ class Subordonne(models.Model):
 
     def __str__(self):
         return f"{self.unite_subordonnee} est sous les ordres de {self.unite_commandant} le {self.date}"
+    
+    def str_commande(self):
+        return f"{self.unite_subordonnee.nom} ({self.date})"
+    
+    def str_commande_par(self):
+        return f"{self.unite_commandant.nom} ({self.date})"
 
 
 
@@ -111,6 +114,12 @@ class Commande(models.Model):
 
     def __str__(self):
         return f"{self.general} commande {self.unite_commandee} le {self.date}"
+    
+    def str_commande(self):
+        return f"{self.unite_commandee.nom} ({self.date})"
+    
+    def str_commande_par(self):
+        return f"{self.general.nom} ({self.date})"
     
 
 class Combat(models.Model):

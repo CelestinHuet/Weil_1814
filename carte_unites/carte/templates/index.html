@@ -119,6 +119,11 @@
             font-weight: bold;
         }
 
+        #titre_odb label {
+            font-weight: bold;
+            color: #2b2b2b;
+        }
+
         /* --- AJOUTS POUR LA MISE EN PAGE --- */
 
         /* 1. Le conteneur principal devient un conteneur flex */
@@ -178,6 +183,13 @@
                         Masquer les lieux objectifs
                     </label>
                 </div>
+                <div id="titre_odb">
+                  <label>A sous ses ordres : </label>
+                  <ul id="commande"></ul>
+                  <label>Est sous les ordres de : </label>
+                  <ul id="dirige_par"></ul>
+                </div>
+                
             </div>
         </section>
 
@@ -188,6 +200,8 @@
 </html>
 
   <script>
+
+    document.getElementById('titre_odb').style.display = "none";
     // Création la carte
     let map = new maplibregl.Map({
         container: 'map', // id du conteneur de la carte
@@ -314,6 +328,25 @@
             map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
             map.getSource('combats').setData(data["combats"]);
+            
+            document.getElementById('titre_odb').style.display = "block";
+            const ul = document.getElementById("commande");
+            ul.innerHTML = ""; // vider la liste
+            // Construire les <li>
+            data["a_sous_ses_ordres"].forEach(unite => {
+                const li = document.createElement("li");
+                li.textContent = unite;
+                ul.appendChild(li);
+            });
+
+            const ul2 = document.getElementById("dirige_par");
+            ul2.innerHTML = ""; // vider la liste
+            // Construire les <li>
+            data["est_commande_par"].forEach(unite => {
+                const li2 = document.createElement("li");
+                li2.textContent = unite;
+                ul2.appendChild(li2);
+            });
           }
         })
       });
@@ -330,12 +363,11 @@
       fetch(`/positions_par_date?date=${selectedDate}`)
       .then(res => res.json())
       .then(data => {
-        if (map.getSource('positions')) {   
-          console.log(data);
-                   
+        if (map.getSource('positions')) {                   
           map.getSource('positions').setData(data["position"]);
           map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
           map.getSource('combats').setData(data["combats"]);
+          document.getElementById('titre_odb').style.display = "none";
         }
       })
     }

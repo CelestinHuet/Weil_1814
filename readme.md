@@ -1,11 +1,6 @@
 
 
 
-# A faire
-
-- [ ] Ajouter les combats et batailles
-
-
 # Modifier les séparations des pages
 
 Le problème, ce sont les notes de bas de page. Il faudrait renvoyer le corps du texte et les notes de bas de page de manière séparée. Une fois qu'on a ça, on peut mettre dans deux répertoires différents notes de bas de page et corps du texte et appliquer ensuite le regroupement de paragraphes sur les deux répertoires.
@@ -111,6 +106,7 @@ python manage.py fusionner_unites
 python manage.py fusionner_unites_1bis
 python manage.py fusionner_unites_etape_2
 python manage.py associate_unites_lieux
+python manage.py associate_combat_lieux
 python manage.py controle_localisation
 
 

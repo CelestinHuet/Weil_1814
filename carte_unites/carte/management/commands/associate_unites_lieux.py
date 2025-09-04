@@ -226,6 +226,21 @@ class Command(BaseCommand):
 
             done += unites
 
+        for unite in tqdm(Unite.objects.all()):
+            if unite in done:
+                continue
+
+            positions = unite.positions.all()
+
+            # On trie les positions par date
+            positions = sorted(positions, key=lambda x: x.date)
+
+            list_lieu_d = List_Lieu_d(positions)
+
+            list_lieu_d.find_best_trajet()
+
+            done += unites
+
 
 
                  

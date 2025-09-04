@@ -130,6 +130,8 @@ def positions_par_date(request):
                 "type": "FeatureCollection",
                 "features": combats_features
             },
+            "est_commande_par":[],
+            "a_sous_ses_ordres":[]
         })
 
 
@@ -230,8 +232,7 @@ def positions_par_unite(request):
         <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
         """
         combat_feature["properties"]["popup"] = popup
-    #unite_0.get_ordre_de_bataille()
-
+    odb = unite_0.get_ordre_de_bataille()
 
     return JsonResponse({
             "position":{
@@ -242,4 +243,7 @@ def positions_par_unite(request):
                 "type": "FeatureCollection",
                 "features": combats_features
             },
+            "est_commande_par":odb["est_commande_par"],
+            "a_sous_ses_ordres":odb["a_sous_ses_ordres"]
+
         })
