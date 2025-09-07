@@ -202,15 +202,115 @@
   <script>
 
     document.getElementById('titre_odb').style.display = "none";
-    // Création la carte
-    let map = new maplibregl.Map({
-        container: 'map', // id du conteneur de la carte
-        style: CarteFacile.mapStyles.simple, // style de carte
-        maxZoom: 18.9, // niveau de zoom maximum, adapté aux cartes utilisant les données IGN
+
+    // Ajout des deux couches Cassini et Etat-major
+    const layer_cassini_etat_major = [
+          { id: "cassini", type: "raster", source: "cassini", layout: { visibility: "none" } },
+          { id: "etatmajor", type: "raster", source: "etatmajor", layout: { visibility: "none" } },
+        ]    
+    
+    const map = new maplibregl.Map({
+      container: "map",
+      style: {
+        version: 8,
+        glyphs:"https://openmaptiles.geo.data.gouv.fr/fonts/{fontstack}/{range}.pbf",
+        sprite:"https://openmaptiles.github.io/osm-bright-gl-style/sprite",
+        sources: {
+          cassini: {
+            type: "raster",
+            tiles: [
+              "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0" +
+              "&LAYER=BNF-IGNF_GEOGRAPHICALGRIDSYSTEMS.CASSINI" +
+              "&STYLE=normal" + 
+              "&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}&FORMAT=image/png" +
+              "&TileMatrixSet=PM"
+            ],
+            tileSize: 256
+          },
+          etatmajor: {
+            type: "raster",
+            tiles: [
+              "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0" +
+              "&LAYER=GEOGRAPHICALGRIDSYSTEMS.ETATMAJOR40" +
+              "&STYLE=normal" + 
+              "&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}&FORMAT=image/jpeg" +
+              "&TileMatrixSet=PM"
+            ],
+            tileSize: 256
+          },
+          plan_ign: {
+            type: "vector",
+            tiles: [
+              "https://data.geopf.fr/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf"
+            ],
+          }
+        },
+        layers: layer_cassini_etat_major.concat(CarteFacile.mapStyles.simple.layers)
+      },
+      center: [2.2, 48.8],
+      zoom: 6
     });
+
+
+    
+    // Choix du fond de carte avec les boutons radio
+    class BasemapControl {
+      onAdd(map) {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+        this._container.style.background = 'white';
+        this._container.style.padding = '6px';
+        this._container.style.fontFamily = 'sans-serif';
+        this._container.style.fontSize = '13px';
+
+        const form = document.createElement('form');
+        form.innerHTML = `
+          <label>
+            <input type="radio" name="basemap" value="plan_ign" checked>
+            Carte IGN
+          </label><br>
+          <label>
+            <input type="radio" name="basemap" value="cassini">
+            Carte de Cassini
+          </label><br>
+          <label>
+            <input type="radio" name="basemap" value="etatmajor">
+            Carte de l'état-major (1820-1866)
+          </label>
+        `;
+
+        form.onchange = (e) => {
+          if (e.target.name === 'basemap') {
+            var layers = map.getStyle().layers;
+            layers.forEach(layer => {              
+              if (layer.source==e.target.value) {
+                map.setLayoutProperty(layer.id, 'visibility', 'visible');
+              }
+              else if (layer.source=="positions" || layer.source=="combats"){
+                map.setLayoutProperty(layer.id, 'visibility', 'visible');
+              }
+              else{
+                map.setLayoutProperty(layer.id, 'visibility', 'none');
+              }
+            });            
+          }
+        };
+
+        this._container.appendChild(form);
+        return this._container;
+      }
+
+    }
+
+    // Ajout du contrôle dans un coin (ici en haut à gauche)
+    map.addControl(new BasemapControl(), 'top-left');
+
+
+
     const scale = new maplibregl.ScaleControl({
-      maxWidth: 80,
-      unit: 'imperial'
+      maxWidth: 200,
+      unit: 'metric'
     });
     const nav = new maplibregl.NavigationControl();
     map.addControl(nav, 'top-right');
@@ -290,7 +390,7 @@
             'icon-size': 0.05, // ajuste la taille
             'icon-allow-overlap': true
           }
-      });
+      });      
     });
 
     // Pop-up sur les positions
@@ -315,6 +415,7 @@
 
     
 
+    // Ajout des courbes de niveau. Pas très utile à cette échelle...
     CarteFacile.addOverlay(map, CarteFacile.Overlay.levelCurves);
 
     // Mise à jour de la carte lors de la sélection d'une unité
@@ -436,6 +537,7 @@
       updateDataDate(input.value);
     }
 
+    updateDataDate("1814-01-01");
     
 
   </script>
