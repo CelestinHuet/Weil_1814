@@ -45,11 +45,23 @@ CAMP_CHOICES = [
         ('NONE', 'None')
     ]
 
+ECHELON = [
+        ('armée', 'Armée'),
+        ('corps', 'Corps'),
+        ('division', 'Division'),
+        ('brigade', 'Brigade'),
+        ('régiment', 'Régiment'),
+        ('bataillon', 'Bataillon'),
+        ('escadron', 'Escadron'),
+        ('inconnu', 'Inconnu'),
+    ]
+
 class Unite(models.Model):
     nom = models.CharField(max_length=100)
     positions = models.ManyToManyField(Position, related_name='unites')
     camp = models.CharField(max_length=10, choices=CAMP_CHOICES, default='NONE')
     grade = models.CharField(max_length=100, blank=True, null=True)
+    echelon = models.CharField(max_length=10, choices=ECHELON, default='inconnu')
 
     def __str__(self):
         return self.nom
