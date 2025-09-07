@@ -41,18 +41,17 @@ class Command(BaseCommand):
             if value > maximum:
                 echelon = key
                 maximum = value
-        return echelon, compte_echelons
+        return echelon
 
 
     def handle(self, *args, **options):
         # On parcourt chaque unité
         for unite in tqdm(Unite.objects.all()):
 
-            # L'unité doit être un général
-            if not unite.is_general():
-                continue
-
             echelon = self.get_echelon_from_grade(unite.grade)
+
+            if echelon is None:
+                echelon = self.get_echelon_from_grade(unite.nom)
 
             if echelon is None:
                 echelon = self.get_echelon_from_subordonne(unite)
