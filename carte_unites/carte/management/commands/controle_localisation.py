@@ -84,6 +84,9 @@ class Command(BaseCommand):
                         self.delete(list_dict[i]["p0"], list_dict[i-1]["p1"])
 
         trie = dict(sorted(self.erreurs.items(), key=lambda item: item[1]["compte"], reverse=True))
-        print(trie)
         for key, value in trie.items():
+            print()
             print(f"{key} : {value["compte"]}, {value["voisins"]}")
+
+        with open("controle_localisation.json", "r") as f:
+            json.dump(trie, f)

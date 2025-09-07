@@ -66,8 +66,8 @@ class Command(BaseCommand):
         files = sorted([i for i in os.listdir(directory) if i[-5:]==".json"])
         for i, file in tqdm(enumerate(files)):
 
-            if i >= 100:
-                break
+            #if i >= 100:
+            #    break
             with open(directory/file, "r") as f:
                 data = json.load(f)
 

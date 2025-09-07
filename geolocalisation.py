@@ -71,7 +71,7 @@ def requete(l):
                 'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
                 'limit': 15,
-                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+                'countrycodes': 'fr,de,ch,be,lu,nl',  # France, Allemagne, Suisse, Blegique, Luxembourg, Pays-bas
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )

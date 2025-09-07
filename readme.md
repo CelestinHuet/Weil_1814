@@ -87,9 +87,9 @@ python manage.py controle_localisation
 ```
 
 
-Créer les flèches de déplacement d'unités
+Associe à chaque unité un échelon (armée, corps, division, brigade...)
 ```
-python manage.py create_arrows
+python manage.py associate_unite_echelon
 ```
 
 Pour réinitialiser la base de données
@@ -108,6 +108,7 @@ python manage.py fusionner_unites_etape_2
 python manage.py associate_unites_lieux
 python manage.py associate_combat_lieux
 python manage.py controle_localisation
+python manage.py associate_unite_echelon
 
 
 
@@ -130,3 +131,12 @@ python manage.py controle_localisation
 * Ségur, Philippe-Paul (général, comte de), La Campagne de France, du Rhin à Fontainebleau (https://gallica.bnf.fr/ark:/12148/bpt6k930585r/f574.item#)
 * Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814) (https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#)
 * Journal historique de la division de cavalerie légère du 5e corps de cavalerie, pendant la campagne en 1814 (https://gallica.bnf.fr/ark:/12148/bpt6k6369024s/f89.item.texteImage#)
+
+
+
+
+# Descriptif
+
+Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier n'est pas représenté, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
+
+Une particularité de ce site consiste dans l'acquisition des données. En effet, la chaîne de traitement pour les récupérer est entièrement automatique grâce aux modèles de langages qui se sont fortement développés ces dernières années et permettent de nouvelles opportunités dans le traitement de gros volumes de texte.
