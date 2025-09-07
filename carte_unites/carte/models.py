@@ -46,11 +46,11 @@ CAMP_CHOICES = [
     ]
 
 ECHELON = [
-        ('armée', 'Armée'),
+        ('armee', 'Armée'),
         ('corps', 'Corps'),
         ('division', 'Division'),
         ('brigade', 'Brigade'),
-        ('régiment', 'Régiment'),
+        ('regiment', 'Régiment'),
         ('bataillon', 'Bataillon'),
         ('escadron', 'Escadron'),
         ('inconnu', 'Inconnu'),

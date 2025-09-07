@@ -303,26 +303,16 @@
 
     }
 
-    // Ajout du contrôle dans un coin (ici en haut à gauche)
+    // Ajout du contrôle du fond de carte dans l'angle en haut à gauche
     map.addControl(new BasemapControl(), 'top-left');
 
-
-
+    // Echelle dans le système métrique
     const scale = new maplibregl.ScaleControl({
       maxWidth: 200,
       unit: 'metric'
     });
     const nav = new maplibregl.NavigationControl();
     map.addControl(nav, 'top-right');
-
-    // Couleur des cercles pour afficher les unités sur la carte
-    const circle_color = [
-      'match',
-      ['get', 'camp'],
-      'FRANCAIS', '#1d4ed8',     // bleu
-      'COALISES', '#e74c3c',     // rouge
-      '#cccccc'
-    ]
 
     // Instanciation des couches
     map.addControl(scale);
@@ -331,6 +321,56 @@
       // On ajoute l'icône pour les combats
       image = await map.loadImage('/static/icons/lieu_combat.png');
       map.addImage('icone_combat', image.data);
+      
+      // Chargement des images, pas réussi à faire plus propre...
+      image = await map.loadImage('/static/icons/inconnu_bleu.png');
+      map.addImage('inconnubleu', image.data);
+      image = await map.loadImage('/static/icons/inconnu_rouge.png');
+      map.addImage('inconnurouge', image.data);
+      image = await map.loadImage('/static/icons/inconnu_inconnu.png');
+      map.addImage('inconnuinconnu', image.data);
+      image = await map.loadImage('/static/icons/corps_bleu.png');
+      map.addImage('corpsbleu', image.data);
+      image = await map.loadImage('/static/icons/corps_rouge.png');
+      map.addImage('corpsrouge', image.data);
+      image = await map.loadImage('/static/icons/corps_inconnu.png');
+      map.addImage('corpsinconnu', image.data);
+      image = await map.loadImage('/static/icons/division_bleu.png');
+      map.addImage('divisionbleu', image.data);
+      image = await map.loadImage('/static/icons/division_rouge.png');
+      map.addImage('divisionrouge', image.data);
+      image = await map.loadImage('/static/icons/division_inconnu.png');
+      map.addImage('divisioninconnu', image.data);
+      image = await map.loadImage('/static/icons/brigade_bleu.png');
+      map.addImage('brigadebleu', image.data);
+      image = await map.loadImage('/static/icons/brigade_rouge.png');
+      map.addImage('brigaderouge', image.data);
+      image = await map.loadImage('/static/icons/brigade_inconnu.png');
+      map.addImage('brigadeinconnu', image.data);
+      image = await map.loadImage('/static/icons/regiment_bleu.png');
+      map.addImage('regimentbleu', image.data);
+      image = await map.loadImage('/static/icons/regiment_rouge.png');
+      map.addImage('regimentrouge', image.data);
+      image = await map.loadImage('/static/icons/regiment_inconnu.png');
+      map.addImage('regimentinconnu', image.data);
+      image = await map.loadImage('/static/icons/bataillon_bleu.png');
+      map.addImage('bataillonbleu', image.data);
+      image = await map.loadImage('/static/icons/bataillon_rouge.png');
+      map.addImage('bataillonrouge', image.data);
+      image = await map.loadImage('/static/icons/bataillon_inconnu.png');
+      map.addImage('batailloninconnu', image.data);
+      image = await map.loadImage('/static/icons/armee_bleu.png');
+      map.addImage('armeebleu', image.data);
+      image = await map.loadImage('/static/icons/armee_rouge.png');
+      map.addImage('armeerouge', image.data);
+      image = await map.loadImage('/static/icons/armee_inconnu.png');
+      map.addImage('armeeinconnu', image.data);
+      image = await map.loadImage('/static/icons/escadron_bleu.png');
+      map.addImage('escadronbleu', image.data);
+      image = await map.loadImage('/static/icons/escadron_rouge.png');
+      map.addImage('escadronrouge', image.data);
+      image = await map.loadImage('/static/icons/escadron_inconnu.png');
+      map.addImage('escadroninconnu', image.data);
       
       // On ajoute la couche des positions
       map.addSource('positions', {
@@ -353,30 +393,35 @@
       // Symboles points pour le placement des unités
       map.addLayer({
         id: 'unit-points',
-        type: 'circle',
-        source: 'positions',
-        paint: {
-          'circle-radius': 6,
-          'circle-color': circle_color,
-          'circle-stroke-width': 1,
-          'circle-stroke-color': '#fff'
-        }
-      });
-
-      // Labels avec les dates ou les noms d'unités
-      map.addLayer({
-        id: 'unites-labels',
         type: 'symbol',
         source: 'positions',
         layout: {
-          'text-field': ['get', 'unite'], // ou un autre champ comme 'type'
-          'text-offset': [0, 1.2],
-          'text-anchor': 'top'
-        },
-        paint: {
-          'text-color': '#000',
-          'text-halo-color': '#fff',
-          'text-halo-width': 1
+          'icon-image': [
+            'concat',
+            ['get', 'echelon'], // armee, corps, division...
+            [
+              'case',
+              ['==', ['get', 'camp'], 'FRANCAIS'], 'bleu',
+              ['==', ['get', 'camp'], 'COALISES'], 'rouge',
+              ['==', ['get', 'camp'], 'NONE'], 'inconnu',
+              'inconnu' // fallback
+            ]
+          ],
+          "icon-size": 0.3,
+          'text-field': ['get', 'unite'],
+          'text-anchor': 'top',
+          'text-offset': [0, 1.0],
+          'symbol-sort-key': [
+            'case',
+            ['==', ['get', 'echelon'], 'armee'], 1,
+            ['==', ['get', 'echelon'], 'corps'], 2,
+            ['==', ['get', 'echelon'], 'division'], 3,
+            ['==', ['get', 'echelon'], 'brigade'], 4,
+            ['==', ['get', 'echelon'], 'regiment'], 5,
+            ['==', ['get', 'echelon'], 'bataillon'], 6,
+            ['==', ['get', 'echelon'], 'inconnu'], 7,
+            8 // fallback
+          ]
         }
       });
 
@@ -390,7 +435,9 @@
             'icon-size': 0.05, // ajuste la taille
             'icon-allow-overlap': true
           }
-      });      
+      });
+
+      updateDataDate("1814-01-01");
     });
 
     // Pop-up sur les positions
@@ -427,7 +474,7 @@
         .then(data => {
           if (map.getSource('positions')) {
             map.getSource('positions').setData(data["position"]);
-            map.setLayoutProperty('unites-labels', 'text-field', ['get', 'date']);
+            map.setLayoutProperty('unit-points', 'text-field', ['get', 'date']);
             map.getSource('combats').setData(data["combats"]);
             
             document.getElementById('titre_odb').style.display = "block";
@@ -464,9 +511,9 @@
       fetch(`/positions_par_date?date=${selectedDate}`)
       .then(res => res.json())
       .then(data => {
-        if (map.getSource('positions')) {                   
+        if (map.getSource('positions')) {                             
           map.getSource('positions').setData(data["position"]);
-          map.setLayoutProperty('unites-labels', 'text-field', ['get', 'unite']);
+          map.setLayoutProperty('unit-points', 'text-field', ['get', 'unite']);
           map.getSource('combats').setData(data["combats"]);
           document.getElementById('titre_odb').style.display = "none";
         }
@@ -480,11 +527,9 @@
       // Si "Tous", on retire le filtre
       if  (value) {
         map.setFilter('unit-points', ['==', ['get', 'planifie'], false]);
-        map.setFilter('unites-labels', ['==', ['get', 'planifie'], false]);
       } else {
         // Sinon, on applique un filtre sur la propriété "type"
         map.setFilter('unit-points', null);
-        map.setFilter('unites-labels', null);
       }
     });
 
@@ -537,7 +582,6 @@
       updateDataDate(input.value);
     }
 
-    updateDataDate("1814-01-01");
     
 
   </script>

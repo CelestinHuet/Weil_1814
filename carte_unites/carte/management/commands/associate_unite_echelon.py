@@ -57,5 +57,9 @@ class Command(BaseCommand):
                 echelon = self.get_echelon_from_subordonne(unite)
 
             if echelon is not None:
-                unite.echelon = echelon
+                
+                unite.echelon = echelon.replace("é", "e")
+                unite.save()
+            else:
+                unite.echelon = "inconnu"
                 unite.save()

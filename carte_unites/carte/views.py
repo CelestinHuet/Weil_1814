@@ -72,7 +72,8 @@ def positions_par_date(request):
                         "justification":[pos.justification],
                         "effectif":[pos.effectif],
                         "source":[pos.source],
-                        "camp":unite.camp
+                        "camp":unite.camp,
+                        "echelon":unite.echelon
                     }
                 })
                 positions_coords.append(position)
@@ -184,7 +185,8 @@ def positions_par_unite(request):
                         "justification":[pos.justification],
                         "effectif":[pos.effectif],
                         "source":[pos.source],
-                        "camp":unite.camp
+                        "camp":unite.camp,
+                        "echelon":unite.echelon
                     }
                 })
                 positions_coords.append(position)
