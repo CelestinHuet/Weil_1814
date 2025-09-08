@@ -25,7 +25,8 @@ nouveaux_noms = {
     "Saint-Laurent":["Epinal"],
     "Bray":["Bray-sur-Seine"],
     "Mouy":["Mouy-sur-Seine"],
-    "Nogent":["Nogent-sur-Seine"]
+    "Nogent":["Nogent-sur-Seine"],
+    "Bourg":["Bourg-en-Bresse"]
 }
 
 

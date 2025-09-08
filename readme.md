@@ -1,3 +1,9 @@
+# A faire
+
+[ ] Ajouter la description du site
+[ ] gérer le cas où le nom d'un général est inclus dans le nom d'une unité
+[ ] Pour la localisation des unités isolées, utiliser le lieu le plus fréquent lors des dates à proximité
+[ ] Retirer les lieux null, Italie, France, rive gauche et autres fleuves
 
 
 

@@ -66,12 +66,11 @@ class Command(BaseCommand):
         files = sorted([i for i in os.listdir(directory) if i[-5:]==".json"])
         for i, file in tqdm(enumerate(files)):
 
-            #if i >= 100:
-            #    break
+            if i >= 100:
+                break
             with open(directory/file, "r") as f:
                 data = json.load(f)
 
-            page = file.replace(".json", "").split("-")[1]
             unites_creees = []
 
             for odb in data["ordre_de_bataille"]:
@@ -79,37 +78,52 @@ class Command(BaseCommand):
                 if date_dt is None:
                     continue
                 camp = self.convert_camp(odb)
-                general = Unite.objects.create(
-                    nom=odb["nom_du_general"],
-                    camp=camp,
-                    grade=odb["grade"]
-                )
-                logging.info(f"On ajoute Unite {general.nom} : pk = {general.pk}")
-                unites_creees.append(general)
+
+                gs = odb["nom_du_general"].replace(" et ", ";").split(";")
+                generaux = []
+                for g in gs:
+                    general = Unite.objects.create(
+                        nom=g,
+                        camp=camp,
+                        grade=odb["grade"]
+                    )
+                    logging.info(f"On ajoute Unite {general.nom} : pk = {general.pk}")
+                    unites_creees.append(general)
+                    generaux.append(general)
                 
 
-                if odb["commande"]!="None" and odb["commande"]!="null" and odb["commande"] is not None:
-                    unite_commandee, boolean = self.get_or_create_unite(unites_creees, odb["commande"], camp)
-                    if boolean:
-                        unites_creees.append(unite_commandee)
-                    c = Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
-                    logging.info(f"On ajoute Commande {c.pk} : {unite_commandee} {unite_commandee.pk}, {general} {general.pk}")
+                for general in generaux:
+                    if odb["commande"]!="None" and odb["commande"]!="null" and odb["commande"] is not None:
+                        unites_commandees = odb["commande"].replace(" et ", ";").split(";")
+                        for unite_commandee_str in unites_commandees:
+                            unite_commandee, boolean = self.get_or_create_unite(unites_creees, unite_commandee_str, camp)
+                            if boolean:
+                                unites_creees.append(unite_commandee)
+                            c = Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
+                            logging.info(f"On ajoute Commande {c.pk} : {unite_commandee} {unite_commandee.pk}, {general} {general.pk}")
 
-                
-                if odb["subordonne"]!="None" and odb["subordonne"]!="null" and odb["subordonne"] is not None:
-                    unite_commandant, boolean = self.get_or_create_unite(unites_creees, odb["subordonne"], camp)
-                    if boolean:
-                        unites_creees.append(unite_commandee)
-                    s = Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
-                    logging.info(f"On ajoute Subordonne {s.pk} : {unite_commandant} {unite_commandant.pk}, {general} {general.pk}")
+                    
+                    if odb["subordonne"]!="None" and odb["subordonne"]!="null" and odb["subordonne"] is not None:
+                        unites_commandants = odb["subordonne"].replace(" et ", ";").split(";")
+                        for unite_commandant_str in unites_commandants:
+                            unite_commandant, boolean = self.get_or_create_unite(unites_creees, unite_commandant_str, camp)
+                            if boolean:
+                                unites_creees.append(unite_commandee)
+                            s = Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
+                            logging.info(f"On ajoute Subordonne {s.pk} : {unite_commandant} {unite_commandant.pk}, {general} {general.pk}")
 
         
             # Pour chaque position :
             for position_dict in data["positions"]:
                 if position_dict["unite"] is not None:
-                    unite, boolean = self.get_or_create_unite(unites_creees, position_dict["unite"], "NONE")
-                    if boolean:
-                        unites_creees.append(unite)
+
+                    unites_str = position_dict["unite"].replace(" et ", ";").split(";")
+                    unites = []
+                    for u_str in unites_str:
+                        unite, boolean = self.get_or_create_unite(unites_creees, u_str, "NONE")
+                        if boolean:
+                            unites_creees.append(unite)
+                            unites.append(unite)
                 
                 # On récupère le lieu, sous forme de str
                 position_lieu = position_dict["lieu"]
@@ -136,9 +150,11 @@ class Command(BaseCommand):
                     effectif=position_dict["effectif"],
                     source=file.replace("-", " p.").replace(".json", "")
                 )
-                logging.info(f"On crée la position {position.pk} : {position.lieu_str}, {unite}")
-                unite.positions.add(position)
-                unite.save()
+
+                for unite in unites:
+                    logging.info(f"On crée la position {position.pk} : {position.lieu_str}, {unite}")
+                    unite.positions.add(position)
+                    unite.save()
 
 
             if not "combat" in data.keys():

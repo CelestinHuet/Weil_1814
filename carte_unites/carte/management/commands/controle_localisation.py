@@ -88,5 +88,5 @@ class Command(BaseCommand):
             print()
             print(f"{key} : {value["compte"]}, {value["voisins"]}")
 
-        with open("controle_localisation.json", "r") as f:
+        with open("controle_localisation.json", "w") as f:
             json.dump(trie, f)
