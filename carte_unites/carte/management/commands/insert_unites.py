@@ -115,15 +115,17 @@ class Command(BaseCommand):
         
             # Pour chaque position :
             for position_dict in data["positions"]:
-                if position_dict["unite"] is not None:
+                if position_dict["unite"] is None:
+                    continue
 
-                    unites_str = position_dict["unite"].replace(" et ", ";").split(";")
-                    unites = []
-                    for u_str in unites_str:
-                        unite, boolean = self.get_or_create_unite(unites_creees, u_str, "NONE")
-                        if boolean:
-                            unites_creees.append(unite)
-                            unites.append(unite)
+
+                unites_str = position_dict["unite"].replace(" et ", ";").split(";")
+                unites = []
+                for u_str in unites_str:
+                    unite, boolean = self.get_or_create_unite(unites_creees, u_str, "NONE")
+                    if boolean:
+                        unites_creees.append(unite)
+                    unites.append(unite)
                 
                 # On récupère le lieu, sous forme de str
                 position_lieu = position_dict["lieu"]

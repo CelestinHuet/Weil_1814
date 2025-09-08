@@ -53,6 +53,8 @@ class Lieu_d:
         self.precedent = None
         self.d_max = self.distance_max()
 
+        self.score = 0
+
     def compute_lat_lon(self):
         lat = []
         lon = []
@@ -102,6 +104,14 @@ class Lieu_d:
                 longitude=self.lon
             )
         self.position.save()
+
+    def compute_score(self, date):
+        for lieu in self.lieux:
+            for l in lieu.position.all():
+                delta = l.date - date
+                if abs(delta.days) < 10:
+                    self.score += 1
+        self.score /= len(self.lieux) 
 
 
     
@@ -191,6 +201,28 @@ class List_Lieu_d:
             lieu.set_lieu()
 
 
+    def find_best_trajet_un_lieu(self):
+        if len(self.list)==1:
+
+            maximum = 0
+            lieu = None
+            for l in self.list[0]:
+                if l.score >= maximum:
+                    maximum = l.score
+                    lieu = l
+            lieu.set_lieu()
+
+
+    def compute_score(self):
+        date = self.positions[0].date
+        for element1 in self.list:
+            for element2 in element1:
+                element2.compute_score(date)
+
+
+
+
+
 
 
 class Command(BaseCommand):
@@ -217,6 +249,10 @@ class Command(BaseCommand):
             for u in unites:
                 positions += u.positions.all()
 
+
+            if len(positions)<=1:
+                continue
+
             # On trie les positions par date
             positions = sorted(positions, key=lambda x: x.date)
 
@@ -232,6 +268,9 @@ class Command(BaseCommand):
 
             positions = unite.positions.all()
 
+            if len(positions)<=1:
+                continue
+
             # On trie les positions par date
             positions = sorted(positions, key=lambda x: x.date)
 
@@ -240,6 +279,17 @@ class Command(BaseCommand):
             list_lieu_d.find_best_trajet()
 
             done += unites
+
+        for unite in tqdm(Unite.objects.all()):
+            if unite in done:
+                continue
+
+            positions = unite.positions.all()
+            if len(positions)==1:
+                list_lieu_d = List_Lieu_d(positions)
+                list_lieu_d.compute_score()
+                list_lieu_d.find_best_trajet_un_lieu()
+
 
 
 

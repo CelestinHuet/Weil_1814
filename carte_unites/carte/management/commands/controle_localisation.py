@@ -88,5 +88,6 @@ class Command(BaseCommand):
             print()
             print(f"{key} : {value["compte"]}, {value["voisins"]}")
 
-        with open("controle_localisation.json", "w") as f:
-            json.dump(trie, f)
+        with open("controle_localisation.txt", "w") as f:
+            for key, value in trie.items():
+                f.write(f"{key} : {value["compte"]}, {value["voisins"]}\n\n")
