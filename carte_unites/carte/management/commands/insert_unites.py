@@ -83,7 +83,7 @@ class Command(BaseCommand):
                 generaux = []
                 for g in gs:
                     general = Unite.objects.create(
-                        nom=g,
+                        nom=g.strip(),
                         camp=camp,
                         grade=odb["grade"]
                     )
@@ -96,7 +96,7 @@ class Command(BaseCommand):
                     if odb["commande"]!="None" and odb["commande"]!="null" and odb["commande"] is not None:
                         unites_commandees = odb["commande"].replace(" et ", ";").split(";")
                         for unite_commandee_str in unites_commandees:
-                            unite_commandee, boolean = self.get_or_create_unite(unites_creees, unite_commandee_str, camp)
+                            unite_commandee, boolean = self.get_or_create_unite(unites_creees, unite_commandee_str.strip(), camp)
                             if boolean:
                                 unites_creees.append(unite_commandee)
                             c = Commande.objects.create(general=general, unite_commandee=unite_commandee, date=date_dt)
@@ -106,7 +106,7 @@ class Command(BaseCommand):
                     if odb["subordonne"]!="None" and odb["subordonne"]!="null" and odb["subordonne"] is not None:
                         unites_commandants = odb["subordonne"].replace(" et ", ";").split(";")
                         for unite_commandant_str in unites_commandants:
-                            unite_commandant, boolean = self.get_or_create_unite(unites_creees, unite_commandant_str, camp)
+                            unite_commandant, boolean = self.get_or_create_unite(unites_creees, unite_commandant_str.strip(), camp)
                             if boolean:
                                 unites_creees.append(unite_commandee)
                             s = Subordonne.objects.create(unite_commandant=unite_commandant, unite_subordonnee=general, date=date_dt)
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 unites_str = position_dict["unite"].replace(" et ", ";").split(";")
                 unites = []
                 for u_str in unites_str:
-                    unite, boolean = self.get_or_create_unite(unites_creees, u_str, "NONE")
+                    unite, boolean = self.get_or_create_unite(unites_creees, u_str.strip(), "NONE")
                     if boolean:
                         unites_creees.append(unite)
                     unites.append(unite)
