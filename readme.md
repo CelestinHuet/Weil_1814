@@ -34,13 +34,13 @@ Comme l'algorithme est automatisé, il faut être conscient qu'il n'est pas parf
 
 Les ouvrages utilisés sont les suivants :
 * [Fabvier, Charles Nicolas, Journal des opérations du Sixième corps pendant la campagne de France en 1814](https://books.googleusercontent.com/books/content?req=AKW5QacNIMYWiY9mwg20HNrpeU72EG3T3qqRdIlVau3P8ntYWYvu9bJovxwa9NrujyhxGqsPmTYd28bOoyHbyUMoEBkEATI7Lu5VPGIgRvcOoxbqIHKGMa0gTqdpiy6Ksk0TjSWZkCAlKJ2CXocTTK-sG9wLLZLkezJJEIo2KqwKXrNrswMUI8vj4ykgxDX0ZQzHjSPYwBBOKhyIJOUbAFwsmZxT9K-2OnUsnj557ROtqw80yf8eeBcpZWSkXtzASEOPHQt1Wkcl8oHWbV35IfCTYHU91lx-u7zxQaa6piVIaziLWKA5lbw)
-* [Grouchy (Marquis de), Mémoires du Maréchal de Grouchy, livres XII et XIII] (https://gallica.bnf.fr/ark:/12148/bpt6k69568c/f477.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20de%20Grouchy)
-* [Hiller, Fritz von, Geschichte des Feldzuges 1814 gegen Frankreich unter besonderer Berücksichtigung der Anteilnahme der Königlich württembergischen Truppen] (https://books.googleusercontent.com/books/content?req=AKW5QafNUPwocMSEtD0WlWiLNMArJOTTE8O6vutmgFZbEI7jyJSRXsCdrBXxFe4tiAtlB8cXrXs8hTicrMnTTJ4keraziWUqsqjhC-REe_ymWPT-cLIZIPIu5Ds1cnJA3xQyyqrb41jzWBlg16UPxhqPs5Gq82bu2ZtIftAkJqLQM3M9cPlpoN5XivRdGlbrLKJdmNSKMQm0eczLcXdlvSSBYfidkGeV9Ma60_verA0qEUVceb8NVHe3EnCs_yRoJYxo8b3lrRmSoQ9sxmdl2TN4KrzQKaYs8Bfda79Rhme7eKtp7R1ezHE)
+* [Grouchy (Marquis de), Mémoires du Maréchal de Grouchy, livres XII et XIII](https://gallica.bnf.fr/ark:/12148/bpt6k69568c/f477.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20de%20Grouchy)
+* [Hiller, Fritz von, Geschichte des Feldzuges 1814 gegen Frankreich unter besonderer Berücksichtigung der Anteilnahme der Königlich württembergischen Truppen](https://books.googleusercontent.com/books/content?req=AKW5QafNUPwocMSEtD0WlWiLNMArJOTTE8O6vutmgFZbEI7jyJSRXsCdrBXxFe4tiAtlB8cXrXs8hTicrMnTTJ4keraziWUqsqjhC-REe_ymWPT-cLIZIPIu5Ds1cnJA3xQyyqrb41jzWBlg16UPxhqPs5Gq82bu2ZtIftAkJqLQM3M9cPlpoN5XivRdGlbrLKJdmNSKMQm0eczLcXdlvSSBYfidkGeV9Ma60_verA0qEUVceb8NVHe3EnCs_yRoJYxo8b3lrRmSoQ9sxmdl2TN4KrzQKaYs8Bfda79Rhme7eKtp7R1ezHE)
 * [Koch, Frédéric, Mémoire pour servir à l'histoire de la campagne de 1814](https://gallica.bnf.fr/ark:/12148/bpt6k63657773.texteImage)
-* [Marmont, Maréchal, Mémoires du duc de Raguse] (https://gallica.bnf.fr/ark:/12148/bpt6k695629/f438.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20Marmont,%20duc%20de%20Raguse#)
-* [Ségur, Philippe-Paul (général, comte de), La Campagne de France, du Rhin à Fontainebleau] (https://gallica.bnf.fr/ark:/12148/bpt6k930585r/f574.item#)
-* [Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814)] (https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#)
-* [Journal historique de la division de cavalerie légère du 5e corps de cavalerie, pendant la campagne en 1814] (https://gallica.bnf.fr/ark:/12148/bpt6k6369024s/f89.item.texteImage#)
+* [Marmont, Maréchal, Mémoires du duc de Raguse](https://gallica.bnf.fr/ark:/12148/bpt6k695629/f438.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20Marmont,%20duc%20de%20Raguse#)
+* [Ségur, Philippe-Paul (général, comte de), La Campagne de France, du Rhin à Fontainebleau](https://gallica.bnf.fr/ark:/12148/bpt6k930585r/f574.item#)
+* [Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814)](https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#)
+* [Journal historique de la division de cavalerie légère du 5e corps de cavalerie, pendant la campagne en 1814](https://gallica.bnf.fr/ark:/12148/bpt6k6369024s/f89.item.texteImage#)
 
 
 
