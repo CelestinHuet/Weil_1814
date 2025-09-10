@@ -3,6 +3,9 @@ from django.views.generic import TemplateView
 from carte.models import Unite, Position, Combat
 from django.http import JsonResponse
 from datetime import datetime
+import logging
+
+logger = logging.getLogger("campagne_France_view")
 
 
 # Create your views here.
@@ -30,6 +33,8 @@ def positions_par_date(request):
     date = request.GET.get('date')
     if not date:
         return JsonResponse({'error': 'Date manquante'}, status=400)
+    
+    logger.info(f"Requête par date : {date}")
     
     date = date.split("-")
     date_dt = datetime(year=int(date[0]), month=int(date[1]), day=int(date[2]))
@@ -137,11 +142,13 @@ def positions_par_date(request):
 
 
 def positions_par_unite(request):
-    unite_0 = request.GET.get('unite')
-    if not unite_0:
+    unite_0_id = request.GET.get('unite')
+    if not unite_0_id:
         return JsonResponse({'error': 'Unité manquante'}, status=400)
     
-    unite_0 = Unite.objects.get(id=unite_0)
+    unite_0 = Unite.objects.get(id=unite_0_id)
+
+    logger.info(f"Requête par unité : {unite_0.nom} {unite_0_id}")
 
     pas = 0.005
     positions_coords = []
