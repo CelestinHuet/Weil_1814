@@ -26,7 +26,26 @@ nouveaux_noms = {
     "Bray":["Bray-sur-Seine"],
     "Mouy":["Mouy-sur-Seine"],
     "Nogent":["Nogent-sur-Seine"],
-    "Bourg":["Bourg-en-Bresse"]
+    "Bourg":["Bourg-en-Bresse"],
+    "Tournay":["Tournai"],
+    "La Ferté":["La Ferté-sous-Jouarre", "Laferté-sur-Aube"],
+    "La Villette":["Pantin"],
+    "Villette":["Villette-sur-Aube"],
+    "Villeneuve":["Villeneuve-le-Comte", "Villeneuve-les-Bordes"],
+    "Saint-Jean":["Saint-Jean-Saverne"],
+    "Châlons":["Châlons-en-Champagne"],
+    "Saint-Amand":["Saint-Amand-sur-Fion"],
+    "Semilly":["Semilly-sous-Laon"],
+    "Maisons-Blanches":["Buchères"],
+    "Surville":["Montereau-Fault-Yonne"],
+    "Varennes":["Varennes-le-Grand"],
+    "Boulancourt":["Longeville-sur-la-Laisnes"],
+    "Vitry":["Vitry-le-François"],
+    "Somme-sous":["Sommesous"],
+    "Saint-Michel":["Saint-Michel-sur-Meurthe"],
+    "Saint-Hilaire":["Saint-Hilaire-sous-Romilly"],
+    "Mont-Louis":["Charonne"],
+    "Corbeil":["Corbeil-Essonnes"]
 }
 
 
@@ -51,6 +70,7 @@ def get_lieux():
 
 
 def requete(l):
+    countrycodes = 'fr,de,ch,be,lu,nl'
     time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
     try:
         response = requests.get(
@@ -59,7 +79,7 @@ def requete(l):
                 'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
                 'limit': 100,
-                'countrycodes': 'fr,de,ch,be,lu',  # France, Allemagne, Suisse
+                'countrycodes':countrycodes ,  # France, Allemagne, Suisse
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )
@@ -71,8 +91,8 @@ def requete(l):
             params={
                 'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
-                'limit': 15,
-                'countrycodes': 'fr,de,ch,be,lu,nl',  # France, Allemagne, Suisse, Blegique, Luxembourg, Pays-bas
+                'limit': 100,
+                'countrycodes': countrycodes,  # France, Allemagne, Suisse, Blegique, Luxembourg, Pays-bas
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )
