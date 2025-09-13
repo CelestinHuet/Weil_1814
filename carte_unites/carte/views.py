@@ -4,6 +4,9 @@ from carte.models import Unite, Position, Combat
 from django.http import JsonResponse
 from datetime import datetime
 import logging
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from .forms import ContactForm
 
 logger = logging.getLogger("campagne_France_view")
 
@@ -256,3 +259,26 @@ def positions_par_unite(request):
             "a_sous_ses_ordres":odb["a_sous_ses_ordres"]
 
         })
+
+
+def contact_view(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            nom = form.cleaned_data["nom"]
+            email = form.cleaned_data["email"]
+            message = form.cleaned_data["message"]
+
+            # Envoi de l'email
+            send_mail(
+                subject=f"Message de {nom}",
+                message=message,
+                from_email=email,
+                recipient_list=["ton_adresse@mail.com"],  # à remplacer par ton email
+            )
+
+            return redirect("carte:carte")  # redirection après envoi
+    else:
+        form = ContactForm()
+
+    return render(request, "contact.html", {"form": form})
