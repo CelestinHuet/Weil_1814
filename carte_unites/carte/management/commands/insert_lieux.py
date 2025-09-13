@@ -13,6 +13,22 @@ class Command(BaseCommand):
         file = options.get("file")
         with open(file, "r") as f:
             data = json.load(f)
+
+
+        removed_list = [
+            "null",
+            "France",
+            "rive gauche",
+            "Pont",
+            "Moselle",
+            "Marne",
+            "Aube",
+            "Sambre",
+            "Meuse",
+            "Rhin",
+            "Seine"
+        ]
         
         for lieu in tqdm(data):
-            Lieu.objects.get_or_create(nom=lieu["lieu"], latitude=lieu["lat"], longitude=lieu["lon"])
+            if not lieu["lieu"] in removed_list:
+                Lieu.objects.get_or_create(nom=lieu["lieu"], latitude=lieu["lat"], longitude=lieu["lon"])
