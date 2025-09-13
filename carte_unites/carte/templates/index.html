@@ -158,6 +158,11 @@
           column-count: 2;      /* nombre de colonnes */
           column-gap: 2em;      /* espace entre colonnes */
           text-align: justify;  /* optionnel : aligner le texte */
+          padding-top: 1%;
+        }
+
+        .bloc {
+          break-inside: avoid;
         }
 
     </style>
@@ -207,63 +212,76 @@
         <div id="map"></div>
       </div>
       <div class="deux-colonnes">
-        <h4>Introduction</h4>
-        <p>
-          Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier n'est pas représenté, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
-        </p> 
+        <div class="bloc">
+          <h4>Introduction</h4>
+          <p>
+            Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier n'est pas représenté, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
+          </p>
 
-        <p>
-          Une particularité de ce site consiste dans l'acquisition des données. En effet, la chaîne de traitement pour les récupérer est entièrement automatique grâce aux modèles de langages qui se sont fortement développés ces dernières années et permettent de nouvelles opportunités dans le traitement de gros volumes de texte.
-          Le code source est disponible sur <a target="_blank" href="https://github.com/CelestinHuet/Weil_1814">Github</a>
-        </p>
+          <p>
+            Une particularité de ce site consiste dans l'acquisition des données. En effet, la chaîne de traitement pour les récupérer est entièrement automatique grâce aux modèles de langages qui se sont fortement développés ces dernières années et permettent de nouvelles opportunités dans le traitement de gros volumes de texte.
+            Le code source est disponible sur <a target="_blank" href="https://github.com/CelestinHuet/Weil_1814">Github</a>.
+          </p>
 
-        <h4>Comment sont acquises les données ?</h4>
-
-        <p>
-          Schématiquement, la démarche est la suivante :
-          <ul>
-            <li>Les ouvrages sont passés du format image au format texte à l'aide de Tesseract</li>
-            <li>Chaque page de chaque ouvrage est passée une première fois à un LLM, en l'occurence Gemini Flash 2.5, pour séparer le corps du texte et les notes de bas de page</li>
-            <li>Les paragraphes à cheval sur deux pages sont regroupés</li>
-            <li>Chaque page est passé une deuxième fois à un LLM. Le LLM extrait les positions des unités, les dates, le camp des unités, les relations de commandement et de subordination entre les unités et les combats. Une unité peut être un général ou bien une entité comme un corps d'armée, une division... Une distinction est faite entre les positions qui sont des objectifs (le général donne l'ordre de se porter sur telle ville) et les positions qui sont réellement occupées par les unités</li>
-            <li>Via Open Street Map, on récupère les coordonnées de chaque lieu</li>
-            <li>On insère dans la base de données les unités et les lieux</li>
-            <li>On fusionne les unités qui ont le même nom</li>
-            <li>Chaque lieu peut posséder plusieurs homonymes : Bar peut aussi bien représenter Bar-sur-Aube que Bar-sur-Seine. Pour trouver l'homonyme le plus probable, on cherche pour chaque unité le chemin le plus court qu'elle peut parcourir dans la campagne</li>
-            <li>On contrôle le résultat de l'algorithme : si la moyenne journalière d'une unité est trop élevé, alors il y a une erreur de localisation.</li>
-            <li>On détermine l'échelon des unités : armée, corps d'armée, division, brigade, régiment, bataillon, escadron...</li>
-            <li>On essaye de déterminer le camp pour les unités dont il n'a pas été identifié par le LLM</li>
-          </ul>
-        </p>
-
-        <h4>A quelles erreurs faut-il s'attendre ?</h4>
-
-        <p>
-          Comme l'algorithme est automatisé, il faut être conscient qu'il n'est pas parfait et que des erreurs ont pu se glisser. Voici quelques types d'erreurs déjà identifiés :
-          <ul>
-            <li>Tesseract n'est pas très bon pour lire les nombres donc les dates peuvent être erronées. Quelques contrôles ont été ajoutés, mais il reste des erreurs. Il n'est pas très performants non plus sur certaines polices d'écritures et pour les noms propres. Un général peut donc être écrit de plusieurs manières différentes, et ce malgré les algorithmes de fusion d'unités. De même, les citations peuvent contenir des fautes d'ortographes.</li>
-            <li>Le numéro de page des sources peut avoir un décalage d'une page. Cela est dû au regroupement des paragraphes qui sont à cheval sur deux pages.</li>
-            <li>Certains noms de villes ou de hameaux ont été modifiés (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparus mais d'autres localités avec le même toponyme continuent d'exister. L'unité sera alors mal placée.</li>
-            <li>Certains lieux sont trop vagues, notamment les cours d'eau les expressions comme "rive gauche" ou les noms de région (Savoie)</li>
-            <li>Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est gérulièrement utilisé pour désigner tout type de formation</li>
-          </ul>
-        </p>
-
-        <h4>Quels sont les ouvrages utilisés ?</h4>
-
-        <p>
-          Les ouvrages utilisés sont les suivants :
-          <ul><a target="_blank" href="https://books.google.fr/books/about/Journal_des_Op%C3%A9rations_du_Sixi%C3%A8me_Corp.html?id=GRtbAAAAcAAJ&redir_esc=y">Fabvier, Charles Nicolas, Journal des opérations du Sixième corps pendant la campagne de France en 1814</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k69568c/f477.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20de%20Grouchy">Grouchy (Marquis de), Mémoires du Maréchal de Grouchy, livres XII et XIII</a></ul>
-          <ul><a target="_blank" href="https://books.google.fr/books/about/Geschichte_des_Feldzuges_1814_gegen_Fran.html?id=cOlcyuxsqm4C&redir_esc=y">Hiller, Fritz von, Geschichte des Feldzuges 1814 gegen Frankreich unter besonderer Berücksichtigung der Anteilnahme der Königlich württembergischen Truppen</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k63657773.texteImage">Koch, Frédéric, Mémoire pour servir à l'histoire de la campagne de 1814</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k695629/f438.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20Marmont,%20duc%20de%20Raguse#">Marmont, Maréchal, Mémoires du duc de Raguse</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6369024s/f89.item.texteImage#">Pétiet, Auguste, Journal historique de la division de cavalerie légère du 5e corps de cavalerie, pendant la campagne en 1814</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k930585r/f574.item#">Ségur, Philippe-Paul (général, comte de), La Campagne de France, du Rhin à Fontainebleau</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k64651q.texteImage">Weil, Maurice-Henri (commandant), La Campagne de 1814, d'après les documents des Archives impériales et royales de la guerre à Vienne</a></ul>
-          <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#">Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814)</a></ul>
-        </p>
         </div>
+         
+
+        
+        <div class="bloc">
+          <h4>Comment sont acquises les données ?</h4>
+          <p>
+            Schématiquement, la démarche est la suivante :
+            <ul>
+              <li>Les ouvrages sont passés du format image au format texte à l'aide de Tesseract.</li>
+              <li>Chaque page de chaque ouvrage est passée une première fois à un LLM, en l'occurence Gemini Flash 2.5, pour séparer le corps du texte et les notes de bas de page.</li>
+              <li>Les paragraphes à cheval sur deux pages sont regroupés.</li>
+              <li>Chaque page est passé une deuxième fois à un LLM. Le LLM extrait les positions des unités, les dates, le camp des unités, les relations de commandement et de subordination entre les unités et les combats. Une unité peut être un général ou bien une entité comme un corps d'armée, une division... Une distinction est faite entre les positions qui sont des objectifs (le général donne l'ordre de se porter sur telle ville) et les positions qui sont réellement occupées par les unités.</li>
+              <li>Via Open Street Map, on récupère les coordonnées de chaque lieu.</li>
+              <li>On insère dans la base de données les unités et les lieux.</li>
+              <li>On fusionne les unités qui ont le même nom.</li>
+              <li>Chaque lieu peut posséder plusieurs homonymes : Bar peut aussi bien représenter Bar-sur-Aube que Bar-sur-Seine. Pour trouver l'homonyme le plus probable, on cherche pour chaque unité le chemin le plus court qu'elle peut parcourir dans la campagne.</li>
+              <li>On contrôle le résultat de l'algorithme : si la moyenne journalière d'une unité est trop élevé, alors il y a une erreur de localisation.</li>
+              <li>On détermine l'échelon des unités : armée, corps d'armée, division, brigade, régiment, bataillon, escadron...</li>
+              <li>On essaye de déterminer le camp pour les unités dont il n'a pas été identifié par le LLM.</li>
+            </ul>
+          </p>
+        </div>
+        
+        <div class="bloc">
+          <h4>À quelles erreurs faut-il s'attendre ?</h4>
+
+          <p>
+            Comme l'algorithme est automatisé, il faut être conscient qu'il n'est pas parfait et que des erreurs ont pu se glisser. Voici quelques types d'erreurs déjà identifiés :
+            <ul>
+              <li>Tesseract n'est pas très bon pour lire les nombres donc les dates peuvent être erronées. Quelques contrôles ont été ajoutés, mais il reste des erreurs. Il n'est pas très performants non plus sur certaines polices d'écritures et pour les noms propres. Un général peut donc être écrit de plusieurs manières différentes, et ce malgré les algorithmes de fusion d'unités. De même, les citations peuvent contenir des fautes d'ortographes.</li>
+              <li>Le numéro de page des sources peut avoir un décalage d'une page. Cela est dû au regroupement des paragraphes qui sont à cheval sur deux pages.</li>
+              <li>Certains noms de villes ou de hameaux ont été modifiés (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparus mais d'autres localités avec le même toponyme continuent d'exister. L'unité sera alors mal placée.</li>
+              <li>Certains lieux sont trop vagues, notamment les cours d'eau les expressions comme "rive gauche" ou les noms de région (Savoie).</li>
+              <li>Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est gérulièrement utilisé pour désigner tout type de formation.</li>
+            </ul>
+          </p>
+        </div>
+
+        
+        <div class="bloc">
+          <h4>Quels sont les ouvrages utilisés ?</h4>
+
+          <p>
+            Les ouvrages utilisés sont les suivants :
+            <ul><a target="_blank" href="https://books.google.fr/books/about/Journal_des_Op%C3%A9rations_du_Sixi%C3%A8me_Corp.html?id=GRtbAAAAcAAJ&redir_esc=y">Fabvier, Charles Nicolas, Journal des opérations du Sixième corps pendant la campagne de France en 1814</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k69568c/f477.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20de%20Grouchy">Grouchy (Marquis de), Mémoires du Maréchal de Grouchy, livres XII et XIII</a></ul>
+            <ul><a target="_blank" href="https://books.google.fr/books/about/Geschichte_des_Feldzuges_1814_gegen_Fran.html?id=cOlcyuxsqm4C&redir_esc=y">Hiller, Fritz von, Geschichte des Feldzuges 1814 gegen Frankreich unter besonderer Berücksichtigung der Anteilnahme der Königlich württembergischen Truppen</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k63657773.texteImage">Koch, Frédéric, Mémoire pour servir à l'histoire de la campagne de 1814</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k695629/f438.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20Marmont,%20duc%20de%20Raguse#">Marmont, Maréchal, Mémoires du duc de Raguse</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6369024s/f89.item.texteImage#">Pétiet, Auguste, Journal historique de la division de cavalerie légère du 5e corps de cavalerie, pendant la campagne en 1814</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k930585r/f574.item#">Ségur, Philippe-Paul (général, comte de), La Campagne de France, du Rhin à Fontainebleau</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k64651q.texteImage">Weil, Maurice-Henri (commandant), La Campagne de 1814, d'après les documents des Archives impériales et royales de la guerre à Vienne</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#">Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814)</a></ul>
+          </p>
+
+          <p>Si vous souhaitez obtenir des informations supplémentaires, suggérer de nouvelles fonctionnalités ou remonter des erreurs, n'hésitez pas à utiliser le <a href="{% url 'carte:contact' %}">formulaire de contact</a>.</p>
+        </div>
+        
 
 
 
