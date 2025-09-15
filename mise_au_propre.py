@@ -47,13 +47,15 @@ for input_file in tqdm(input_files):
     try:
         response = client.models.generate_content(
             model="gemini-2.5-flash", 
+            #model="gemini-2.5-pro", 
             contents=contents,
             config={
                 "response_mime_type": "application/json",
                 "response_schema": Schema,
             },
         )
-    except:
+    except Exception as e:
+        print(e)
         time.sleep(60)
         continue
     

@@ -33,14 +33,14 @@
         header {
             background-color: #001f3f; /* bleu empire */
             color: #fff8e1; /* blanc chaud */
-            padding: 2rem;
+            padding: 1.8rem;
             text-align: center;
             border-bottom: 5px solid #c9a94d; /* doré */
         }
 
         header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             letter-spacing: 1px;
         }
         
@@ -165,6 +165,129 @@
           break-inside: avoid;
         }
 
+
+        /* Container de la popup */
+        .map-popup{
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+          background: #ffffff;
+          color: #1f2937; /* gris foncé */
+          border-radius: 10px;
+          box-shadow: 0 6px 20px rgba(31,41,55,0.2);
+          padding: 12px;
+          max-width: 320px;   /* ajuster selon besoin */
+          width: max-content;
+          line-height: 1.35;
+          box-sizing: border-box;
+          -webkit-font-smoothing:antialiased;
+        }
+
+        /* Header (titre + meta) */
+        .map-popup__header{
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-bottom: 8px;
+        }
+
+        /* Nom / titre */
+        .map-popup__title{
+          font-weight: 700;
+          font-size: 15px;
+          letter-spacing: -0.01em;
+          overflow-wrap: anywhere; /* découpe les mots longs */
+        }
+
+        /* Meta (date + lieu) */
+        .map-popup__meta{
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          font-size: 12px;
+          color: #6b7280; /* gris moyen */
+        }
+
+        /* Séparateur si besoin entre date et lieu */
+        .map-popup__date::after{
+          content: "•";
+          margin: 0 6px;
+          color: #d1d5db;
+        }
+
+        /* Citation (blockquote) */
+        .map-popup__quote{
+          margin: 0;
+          padding-left: 10px;
+          border-left: 3px solid #e6eef9; /* accent léger */
+          font-style: italic;
+          font-size: 13px;
+          color: #374151;
+          max-height: none;
+          overflow: visible;
+          transition: max-height 0.25s ease;
+        }
+
+        /* Version "reduite" pour citations longues : masque après N lignes */
+        .map-popup__quote--collapsed{
+          display: -webkit-box;
+          -webkit-line-clamp: 4; /* nombre de lignes visibles par défaut */
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          max-height: calc(1.35em * 4); /* fallback */
+        }
+
+        /* Bouton toggle "Lire la suite" */
+        .map-popup__toggle{
+          display: inline-block;
+          margin-top: 8px;
+          background: transparent;
+          border: none;
+          color: #2563eb; /* bleu action */
+          cursor: pointer;
+          padding: 6px 0;
+          font-size: 13px;
+          text-decoration: underline;
+          line-height: 1;
+        }
+
+        /* Focus et accessibilité */
+        .map-popup__toggle:focus,
+        .map-popup__title:focus{
+          outline: 3px solid rgba(37,99,235,0.15);
+          outline-offset: 2px;
+          border-radius: 6px;
+        }
+
+        /* Dark mode (optionnel) */
+        @media (prefers-color-scheme: dark){
+          .map-popup{
+            background: #0f1724;
+            color: #e6eef8;
+            box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+          }
+          .map-popup__meta{ color:#9ca3af; }
+          .map-popup__quote{ border-left-color: rgba(255,255,255,0.06); color:#d1d5db; }
+          .map-popup__toggle{ color: #93c5fd;}
+        }
+
+        /* Responsive: réduire largeur sur petits écrans */
+        @media (max-width: 420px){
+          .map-popup{ max-width: 88vw; padding:10px; }
+        }
+
+        /* Supprime le cadre/ombre de MapLibre */
+        .maplibregl-popup-content {
+          background: transparent !important;
+          box-shadow: none !important;
+          border: none !important;
+          padding: 0 !important;
+        }
+
+        /* Supprime le petit triangle (la flèche) */
+        .maplibregl-popup-tip {
+          display: none !important;
+        }
+
+
     </style>
 </head>
 <body>
@@ -257,7 +380,7 @@
               <li>Le numéro de page des sources peut avoir un décalage d'une page. Cela est dû au regroupement des paragraphes qui sont à cheval sur deux pages.</li>
               <li>Certains noms de villes ou de hameaux ont été modifiés (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparus mais d'autres localités avec le même toponyme continuent d'exister. L'unité sera alors mal placée.</li>
               <li>Certains lieux sont trop vagues, notamment les cours d'eau les expressions comme "rive gauche" ou les noms de région (Savoie).</li>
-              <li>Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est gérulièrement utilisé pour désigner tout type de formation.</li>
+              <li>Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est régulièrement utilisée pour désigner tout type de formation.</li>
             </ul>
           </p>
         </div>
@@ -268,6 +391,11 @@
 
           <p>
             Les ouvrages utilisés sont les suivants :
+            <ul><a target="_blank" href="https://books.google.fr/books/about/Geschichte_des_Krieges_1814_in_Frankreic.html?id=m0BBAAAAcAAJ&redir_esc=y">Bogdanovich, Geschichte des Krieges 1814 in Frankreich und des Sturzes Napoleon's I.</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k930786r">Bouvier, Félix, Les premiers combats de 1814 : prologue de la Campagne de France dans les Vosges</a></ul>
+            <ul><a target="_blank" href="https://books.google.fr/books/about/Le_g%C3%A9n%C3%A9ral_Maison_et_le_1er_corps_de_l.html?id=cqakgvLoH0oC&redir_esc=y">Calmon-Maison, Jean, Le général Maison et le 1er corps de la Grande Armée</a></ul>
+            <ul><a target="_blank" href="https://books.google.fr/books/about/Pr%C3%A9cis_historique_des_op%C3%A9rations_de_l.html?hl=fr&id=GiHUdyDROhYC&redir_esc=y">du Casse, Albert, Précis historique des opérations de l'armée de Lyon en 1814</a></ul>
+            <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6356047k.texteImage">Foch, Ferdinand, La bataille de Laon, mars 1814</a></ul>
             <ul><a target="_blank" href="https://books.google.fr/books/about/Journal_des_Op%C3%A9rations_du_Sixi%C3%A8me_Corp.html?id=GRtbAAAAcAAJ&redir_esc=y">Fabvier, Charles Nicolas, Journal des opérations du Sixième corps pendant la campagne de France en 1814</a></ul>
             <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k69568c/f477.item.r=M%C3%A9moires%20du%20mar%C3%A9chal%20de%20Grouchy">Grouchy (Marquis de), Mémoires du Maréchal de Grouchy, livres XII et XIII</a></ul>
             <ul><a target="_blank" href="https://books.google.fr/books/about/Geschichte_des_Feldzuges_1814_gegen_Fran.html?id=cOlcyuxsqm4C&redir_esc=y">Hiller, Fritz von, Geschichte des Feldzuges 1814 gegen Frankreich unter besonderer Berücksichtigung der Anteilnahme der Königlich württembergischen Truppen</a></ul>
@@ -678,6 +806,29 @@
       updateDataDate(input.value);
     }
 
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.classList) return;
+      if (!e.target.classList.contains('map-popup__toggle')) return;
+
+      const btn = e.target;
+      const quoteId = btn.getAttribute('aria-controls');
+      const quote = document.getElementById(quoteId);
+      if (!quote) return;
+
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      if (expanded) {
+        // réduire
+        quote.classList.add('map-popup__quote--collapsed');
+        btn.textContent = 'Lire la suite';
+        btn.setAttribute('aria-expanded','false');
+      } else {
+        // déplier
+        quote.classList.remove('map-popup__quote--collapsed');
+        btn.textContent = 'Réduire';
+        btn.setAttribute('aria-expanded','true');
+      }
+    });
     
 
   </script>

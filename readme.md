@@ -1,7 +1,9 @@
 # A faire
 
-[ ] Ajouter la description du site
-[ ] Retirer les lieux null, Italie, France, rive gauche et autres fleuves
+[ ] Modifier la mise en page de la description du site (sur une autre page ?)
+[ ] Ajouter carte 1:25000 si possible ?
+[ ] Ajouter quelques cartes
+[ ] Compléter la bibliographie
 
 
 
@@ -30,7 +32,7 @@ Comme l'algorithme est automatisé, il faut être conscient qu'il n'est pas parf
 * Le numéro de page des sources peut avoir un décalage d'une page. Cela est dû au regroupement des paragraphes qui sont à cheval sur deux pages.
 * Certains noms de villes ou de hameaux ont été modifiés (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparus mais d'autres localités avec le même toponyme continuent d'exister. L'unité sera alors mal placée.
 * Certains lieux sont trop vagues, notamment les cours d'eau les expressions comme "rive gauche" ou les noms de région (Savoie)
-* Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est gérulièrement utilisé pour désigner tout type de formation
+* Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est régulièrement utilisée pour désigner tout type de formation
 
 Les ouvrages utilisés sont les suivants :
 * [Fabvier, Charles Nicolas, Journal des opérations du Sixième corps pendant la campagne de France en 1814](https://books.googleusercontent.com/books/content?req=AKW5QacNIMYWiY9mwg20HNrpeU72EG3T3qqRdIlVau3P8ntYWYvu9bJovxwa9NrujyhxGqsPmTYd28bOoyHbyUMoEBkEATI7Lu5VPGIgRvcOoxbqIHKGMa0gTqdpiy6Ksk0TjSWZkCAlKJ2CXocTTK-sG9wLLZLkezJJEIo2KqwKXrNrswMUI8vj4ykgxDX0ZQzHjSPYwBBOKhyIJOUbAFwsmZxT9K-2OnUsnj557ROtqw80yf8eeBcpZWSkXtzASEOPHQt1Wkcl8oHWbV35IfCTYHU91lx-u7zxQaa6piVIaziLWKA5lbw)

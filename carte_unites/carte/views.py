@@ -32,6 +32,48 @@ def position_in_list(list, position, unite):
     return None
 
 
+
+def write_popup(props):
+
+
+    popup = f"""
+    <div class="map-popup" role="dialog" aria-label="Détails de l'unité">
+        <div class="map-popup__header">
+            <div class="map-popup__title">{props["unite"]}</div>
+            <div class="map-popup__meta">
+            <time class="map-popup__date" datetime="2025-09-15">{props["date"]}</time>
+            <span class="map-popup__location">{props["lieu"]}</span>
+            </div>
+        </div>
+
+
+        <blockquote class="map-popup__quote map-popup__quote--collapsed" id="quote1">
+        """
+    
+    for i in range(len(props["justification"])):
+        popup += f"""
+            <p>
+            {props["justification"][i]} - ({props["source"][i]}).
+
+            """
+        if props["planifie"][i]:
+            popup += "<strong> (Objectif)</strong>"
+            
+        popup += """
+        </p>
+        """
+    popup += """
+        </blockquote>
+
+        <button class="map-popup__toggle" aria-expanded="false" aria-controls="quote1">Lire la suite</button>
+
+
+        </div>
+
+    """
+    return popup
+
+
 def positions_par_date(request):
     date = request.GET.get('date')
     if not date:
@@ -89,21 +131,7 @@ def positions_par_date(request):
 
     for feature in features:
         props = feature["properties"]
-        popup = f"""
-        <strong>{props["unite"]}</strong>
-        <br>{props["date"]}<br>
-        <br>{props["lieu"]}<br>
-        Extraits :
-        """
-
-        for i in range(len(props["justification"])):
-            popup += f"""
-            <ul> - {props["justification"][i]} ({props["source"][i]}).
-            """
-            if props["planifie"][i]:
-                popup += "<strong> Objectif</strong>"
-            popup += "</ul>"
-        feature["properties"]["popup"] = popup
+        feature["properties"]["popup"] = write_popup(props)
         feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
     combats_features = []
@@ -221,21 +249,7 @@ def positions_par_unite(request):
 
     for feature in features:
         props = feature["properties"]
-        popup = f"""
-        <strong>{props["unite"]}</strong>
-        <br>{props["date"]}<br>
-        <br>{props["lieu"]}<br>
-        Extraits :
-        """
-
-        for i in range(len(props["justification"])):
-            popup += f"""
-            <ul>{props["justification"][i]} ({props["source"][i]})</ul>
-            """
-            if props["planifie"][i]:
-                popup += "<b> Objectif</b>"
-            popup += "</ul>"
-        feature["properties"]["popup"] = popup
+        feature["properties"]["popup"] = write_popup(props)
         feature["properties"]["planifie"] = all(feature["properties"]["planifie"])
 
 
