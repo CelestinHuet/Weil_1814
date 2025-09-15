@@ -431,6 +431,7 @@
     const layer_cassini_etat_major = [
           { id: "cassini", type: "raster", source: "cassini", layout: { visibility: "none" } },
           { id: "etatmajor", type: "raster", source: "etatmajor", layout: { visibility: "none" } },
+          { id: "OSM", type: "raster", source: "OSM", layout: { visibility: "none" } },
         ]    
     
     const map = new maplibregl.Map({
@@ -459,6 +460,13 @@
               "&STYLE=normal" + 
               "&TILEMATRIX={z}&TILECOL={x}&TILEROW={y}&FORMAT=image/jpeg" +
               "&TileMatrixSet=PM"
+            ],
+            tileSize: 256
+          },
+          OSM: {
+            type: "raster",
+            tiles: [
+              'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
             ],
             tileSize: 256
           },
@@ -493,6 +501,10 @@
           <label>
             <input type="radio" name="basemap" value="plan_ign" checked>
             Carte IGN
+          </label><br>
+          <label>
+            <input type="radio" name="basemap" value="OSM">
+            Open Street Map
           </label><br>
           <label>
             <input type="radio" name="basemap" value="cassini">
