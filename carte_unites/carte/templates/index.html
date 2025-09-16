@@ -21,7 +21,8 @@
     <style>
         /* Police d'inspiration classique */
         body {
-            font-family: 'Georgia', serif;
+            /*font-family: 'Georgia', serif;*/
+            font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
             background-color: #f8f5f0; /* ivoire doux */
             color: #2e2e2e;
             margin: 0;
@@ -287,6 +288,27 @@
           display: none !important;
         }
 
+        #basemap-form {
+          margin-top: 3px;
+          padding: 5px;
+          background: white;
+          font-size: 14px;
+          text-align: left;
+        }
+
+        #basemap-form label {
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        #basemap-form p {
+          font-weight: bold;
+          margin: 5px;
+        }
+
+        .hidden {
+          display: none;
+        }
 
     </style>
 </head>
@@ -514,43 +536,38 @@
     class BasemapControl {
       onAdd(map) {
         this._map = map;
+
+        // Conteneur principal du contrôle
         this._container = document.createElement('div');
         this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-        this._container.style.background = 'white';
-        this._container.style.padding = '6px';
-        this._container.style.fontFamily = 'sans-serif';
-        this._container.style.fontSize = '13px';
 
-        const form = document.createElement('form');
+        // Bouton d'icône
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.innerHTML = '🗺️'; // tu peux remplacer par une icône SVG
+        button.title = 'Choisir un fond de plan';
+        button.addEventListener('click', () => {
+          form.classList.toggle('hidden');
+        });
+
+        this._container.appendChild(button);
+
+        // Formulaire (caché par défaut)
+        const form = document.createElement('div');
+        form.id = 'basemap-form';
+        form.className = 'hidden';
         form.innerHTML = `
-          <label>
-            <input type="radio" name="basemap" value="plan_ign" checked>
-            Carte IGN
-          </label><br>
-          <label>
-            <input type="radio" name="basemap" value="OSM">
-            Open Street Map
-          </label><br>
-          <label>
-            <input type="radio" name="basemap" value="cassini">
-            Carte de Cassini
-          </label><br>
-          <label>
-            <input type="radio" name="basemap" value="etatmajor">
-            Carte de l'état-major (1820-1866)
-          </label>
-          <br>
-          <p>Cartes</p>
-          <label>
-            <input type="checkbox" name="basemap_carte" value="page64">
-            Thiers page 64
-          </label>
-          <br>
-          <label>
-            <input type="checkbox" name="basemap_carte" value="page65">
-            Thiers page 65
-          </label>
+          <p>Fonds de plans</p>
+          <label><input type="radio" name="basemap" value="plan_ign" checked> Carte IGN</label>
+          <label><input type="radio" name="basemap" value="OSM"> Open Street Map</label>
+          <label><input type="radio" name="basemap" value="cassini"> Carte de Cassini</label>
+          <label><input type="radio" name="basemap" value="etatmajor"> Carte de l'état-major (1820-1866)</label>
+          <p>Cartes historiques</p>
+          <label><input type="checkbox" name="basemap_carte" value="page64"> Est de la France (Thiers p.64)</label>
+          <label><input type="checkbox" name="basemap_carte" value="page65"> Champagne (Thiers p.65)</label>
         `;
+
+        this._container.appendChild(form);
 
         form.onchange = (e) => {
           if (e.target.name === 'basemap') {
@@ -586,6 +603,10 @@
         return this._container;
       }
 
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+      }
     }
 
     // Ajout du contrôle du fond de carte dans l'angle en haut à gauche
