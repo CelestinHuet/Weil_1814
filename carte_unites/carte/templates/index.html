@@ -108,7 +108,7 @@
         }
 
         button:hover {
-            background-color: #003366;
+            color: #374151;
         }
 
         .view-options label {
@@ -242,33 +242,14 @@
           margin-top: 8px;
           background: transparent;
           border: none;
-          color: #2563eb; /* bleu action */
+          color: #6b7280;
           cursor: pointer;
-          padding: 6px 0;
+          padding: 6px;
           font-size: 13px;
           text-decoration: underline;
           line-height: 1;
         }
 
-        /* Focus et accessibilité */
-        .map-popup__toggle:focus,
-        .map-popup__title:focus{
-          outline: 3px solid rgba(37,99,235,0.15);
-          outline-offset: 2px;
-          border-radius: 6px;
-        }
-
-        /* Dark mode (optionnel) */
-        @media (prefers-color-scheme: dark){
-          .map-popup{
-            background: #0f1724;
-            color: #e6eef8;
-            box-shadow: 0 6px 20px rgba(2,6,23,0.6);
-          }
-          .map-popup__meta{ color:#9ca3af; }
-          .map-popup__quote{ border-left-color: rgba(255,255,255,0.06); color:#d1d5db; }
-          .map-popup__toggle{ color: #93c5fd;}
-        }
 
         /* Responsive: réduire largeur sur petits écrans */
         @media (max-width: 420px){
