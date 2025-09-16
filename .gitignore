@@ -40,3 +40,7 @@ keys.txt
 liste_combats.py
 
 settings.py
+
+
+carte_unites/carte/static/fond_carte/*
+cartographie/*

@@ -141,3 +141,12 @@ python manage.py controle_localisation
 python manage.py associate_unite_echelon
 python manage.py associate_unite_camp
 ```
+
+
+
+# Pour les cartes
+
+```
+gdalwarp -t_srs EPSG:3857 page-65.tif page-65_3857.tif
+gdal2tiles.py -z 5-12 --xyz -w none page-65_3857.tif tiles/
+```

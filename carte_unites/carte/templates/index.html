@@ -428,11 +428,15 @@
     document.getElementById('titre_odb').style.display = "none";
 
     // Ajout des deux couches Cassini et Etat-major
-    const layer_cassini_etat_major = [
+    const layer_cassini_etat_major = [ 
           { id: "cassini", type: "raster", source: "cassini", layout: { visibility: "none" } },
           { id: "etatmajor", type: "raster", source: "etatmajor", layout: { visibility: "none" } },
           { id: "OSM", type: "raster", source: "OSM", layout: { visibility: "none" } },
-        ]    
+        ]  
+        
+    const layers_cartes_histo = [ 
+          { id: "page65", type: "raster", source: "page65", layout: { visibility: "none" } },
+        ]  
     
     const map = new maplibregl.Map({
       container: "map",
@@ -475,9 +479,17 @@
             tiles: [
               "https://data.geopf.fr/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf"
             ],
+          },
+          page65: {
+            type: "raster",
+            tiles: [
+              'http://127.0.0.1:8000/static/fond_carte/page_65/tiles/{z}/{x}/{y}.png'
+            ],
+            minzoom: 5,
+            maxzoom: 12
           }
         },
-        layers: layer_cassini_etat_major.concat(CarteFacile.mapStyles.simple.layers)
+        layers: layer_cassini_etat_major.concat(CarteFacile.mapStyles.simple.layers).concat(layers_cartes_histo)
       },
       center: [2.2, 48.8],
       zoom: 6
@@ -514,6 +526,12 @@
             <input type="radio" name="basemap" value="etatmajor">
             Carte de l'état-major (1820-1866)
           </label>
+          <br>
+          <p>Cartes</p>
+          <label>
+            <input type="checkbox" name="basemap_carte" value="page65">
+            Thiers page 65
+          </label>
         `;
 
         form.onchange = (e) => {
@@ -530,6 +548,19 @@
                 map.setLayoutProperty(layer.id, 'visibility', 'none');
               }
             });            
+          }
+          if (e.target.name === 'basemap_carte'){
+            var layers = map.getStyle().layers;
+            layers.forEach(layer => {              
+              if (layer.source==e.target.value) {
+                const visibility = map.getLayoutProperty(layer.id, 'visibility');
+                if (visibility === 'visible') {
+                  map.setLayoutProperty(layer.id, 'visibility', 'none');
+                } else {
+                  map.setLayoutProperty(layer.id, 'visibility', 'visible');
+                }
+              }
+            })
           }
         };
 
