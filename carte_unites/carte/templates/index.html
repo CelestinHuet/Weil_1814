@@ -407,6 +407,10 @@
             <ul><a target="_blank" href="https://gallica.bnf.fr/ark:/12148/bpt6k6562110d/f39.item#">Les combats de Mormant, de Villeneuve-le-Comte et de Montereau (17 et 18 février 1814)</a></ul>
           </p>
 
+          <p>
+            Les cartes proviennent de l'<a href="https://bibliotheque-martial-lapeyre.napoleon.org/Default/doc/SYRACUSE/15686/atlas-de-l-histoire-du-consulat-et-de-l-empire-dresse-et-dessine-sous-la-direction-de-m-thiers-par-m?_lg=fr-FR">Atlas de l'histoire du Consulat et de l'Empire de Thiers</a>.
+          </p>
+
           <p>Si vous souhaitez obtenir des informations supplémentaires, suggérer de nouvelles fonctionnalités ou remonter des erreurs, n'hésitez pas à utiliser le <a href="{% url 'carte:contact' %}">formulaire de contact</a>.</p>
         </div>
         
@@ -436,6 +440,7 @@
         
     const layers_cartes_histo = [ 
           { id: "page65", type: "raster", source: "page65", layout: { visibility: "none" } },
+          { id: "page64", type: "raster", source: "page64", layout: { visibility: "none" } },
         ]  
     
     const map = new maplibregl.Map({
@@ -480,10 +485,18 @@
               "https://data.geopf.fr/tms/1.0.0/PLAN.IGN/{z}/{x}/{y}.pbf"
             ],
           },
+          page64: {
+            type: "raster",
+            tiles: [
+              '/static/fond_carte/page_64/tiles/{z}/{x}/{y}.png'
+            ],
+            minzoom: 0,
+            maxzoom: 12
+          },
           page65: {
             type: "raster",
             tiles: [
-              'http://127.0.0.1:8000/static/fond_carte/page_65/tiles/{z}/{x}/{y}.png'
+              '/static/fond_carte/page_65/tiles/{z}/{x}/{y}.png'
             ],
             minzoom: 5,
             maxzoom: 12
@@ -528,6 +541,11 @@
           </label>
           <br>
           <p>Cartes</p>
+          <label>
+            <input type="checkbox" name="basemap_carte" value="page64">
+            Thiers page 64
+          </label>
+          <br>
           <label>
             <input type="checkbox" name="basemap_carte" value="page65">
             Thiers page 65
