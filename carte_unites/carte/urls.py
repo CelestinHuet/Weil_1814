@@ -8,4 +8,5 @@ urlpatterns = [
     path('positions_par_date/', v.positions_par_date, name='positions_par_date'),
     path('positions_par_unite/', v.positions_par_unite, name='positions_par_unite'),
     path("contact/", v.contact_view, name="contact"),
+    path("faq/", v.faq_view, name="faq"),
 ]

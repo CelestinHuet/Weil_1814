@@ -296,3 +296,7 @@ def contact_view(request):
         form = ContactForm()
 
     return render(request, "contact.html", {"form": form})
+
+
+def faq_view(request):
+    return render(request, "FAQ.html")

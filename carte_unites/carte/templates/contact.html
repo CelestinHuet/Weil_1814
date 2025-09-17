@@ -1,151 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
+    
 <head>
-    <style>
-        /* Police d'inspiration classique */
-        body {
-            font-family: 'Georgia', serif;
-            background-color: #f8f5f0; /* ivoire doux */
-            color: #2e2e2e;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-        /* En-tête solennel */
-        header {
-            background-color: #001f3f; /* bleu empire */
-            color: #fff8e1; /* blanc chaud */
-            padding: 1.8rem;
-            text-align: center;
-            border-bottom: 5px solid #c9a94d; /* doré */
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .form-item {
-            display: flex;
-            flex-direction: column; /* Label au-dessus du champ */
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-
-        .date-input-group {
-            display: flex;
-            width: 100%; /* Prend toute la largeur disponible dans le panneau */
-        }
-
-        /* Formulaires */
-        form label, .form-item > label {
-            font-weight: bold;
-            color: #2b2b2b;
-        }
-
-        /* Unifie le style de l'input de date et du select personnalisé */
-        input[type="date"],
-        .choices__inner {
-            padding: 0.8rem; /* Un peu plus de padding pour un meilleur alignement vertical */
-            border: 1px solid #bbb;
-            border-radius: 4px;
-            background-color: #fefefe;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-            min-height: auto; /* Nécessaire pour Choices.js */
-        }
-
-        /* Ajustement pour que la bordure ne change pas de couleur au focus */
-        .is-focused .choices__inner {
-            border-color: #bbb;
-        }
-
-        .date-input-group input[type="date"] {
-            flex-grow: 1; /* L'input s'étire */
-        }
-
-        .date-input-group button {
-            flex-shrink: 0; /* Les boutons ne rétrécissent pas */
-        }
-
-        /* Boutons */
-        button {
-            padding: 0.6rem 1.2rem;
-            background-color: #001f3f;
-            color: #fff8e1;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #003366;
-        }
-
-        .view-options label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #444;
-            font-size: 0.95rem;
-            font-weight: bold;
-        }
-
-        #titre_odb label {
-            font-weight: bold;
-            color: #2b2b2b;
-        }
-
-        /* --- AJOUTS POUR LA MISE EN PAGE --- */
-
-        /* 1. Le conteneur principal devient un conteneur flex */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            /* Calcule la hauteur restante de la fenêtre (100vh) moins la hauteur approximative du header */
-            height: calc(100vh - 105px); /* Ajustez cette valeur si votre header change */
-            padding: 3%;
-        }
-
-        /* 2. On donne une taille fixe au panneau de contrôle (l'ancienne section.controls) */
-        .main-container .controls {
-            flex: 0 0 380px; /* Ne grandit pas, ne rétrécit pas, largeur de base 380px */
-            padding: 1.5rem;
-            background-color: #ffffff;
-            overflow-y: auto; /* Ajoute une barre de défilement si le contenu est trop grand */
-            border-right: 2px solid #ded6c3; /* Ligne de séparation */
-        }
-
-        .main-container .controls .choices {
-          width: 300px;
-        }
-
-        /* 3. La carte prend tout le reste de la place */
-        .main-container #map {
-            flex-grow: 1; /* Permet à la carte de grandir */
-            height: 100%; /* La carte prend 100% de la hauteur de son parent */
-        }
-
-        .deux-colonnes {
-          width: 60%;           /* largeur totale du bloc */
-          margin: auto;         /* centrage horizontal */
-          column-count: 2;      /* nombre de colonnes */
-          column-gap: 2em;      /* espace entre colonnes */
-          text-align: justify;  /* optionnel : aligner le texte */
-        }
-
-    </style>
 
 
 
@@ -156,9 +15,14 @@
 <body>
     <header>
         <h1>Carte de la campagne de France (Déc 1813 - Avril 1814)</h1>
+
+        <div class="faq-actions">
+            <a href="{% url 'carte:carte' %}">Carte</a>
+            <a href="{% url 'carte:contact' %}">Contact</a>
+        </div>
     </header>
 
-    <div class="main-container">
+    <div class="main-container-contact">
         <h2>Formulaire de contact</h2>
         <p>
             Si vous souhaitez avoir plus d'informations sur la partie technique ou bien suggérer de nouvelles fonctionnalités, n'hésitez pas ! Je serai ravi d'en discuter.
