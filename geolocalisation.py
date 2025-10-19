@@ -9,44 +9,11 @@ from tqdm import tqdm
 
 
 
-nouveaux_noms = {
-    "Ligny":["Ligny-en-Barrois"],
-    "Vassy":["Wassy"],
-    "Eurville":["Eurville-Bienville"],
-    "Dommartin":["Dommartin-lès-Toul"],
-    "Bar":["Bar-sur-Aube", "Bar-sur-Seine"],
-    "Vendeuvre":["Vendeuvre-sur-Barse"],
-    "La Chaussée":["La Chaussée-sur-Marne"],
-    "Brienne":["Brienne-le-Château"],
-    "Saint-Urbain":["Saint-Urbain-Maconcourt"],
-    "Thaon":["Thaon-les-Vosges"],
-    "Perthes":["Perthes-lès-Brienne"],
-    "Sainte-Croix":["Sainte-Croix-en-Plaine"],
-    "Saint-Laurent":["Epinal"],
-    "Bray":["Bray-sur-Seine"],
-    "Mouy":["Mouy-sur-Seine"],
-    "Nogent":["Nogent-sur-Seine"],
-    "Bourg":["Bourg-en-Bresse"],
-    "Tournay":["Tournai"],
-    "La Ferté":["La Ferté-sous-Jouarre", "Laferté-sur-Aube"],
-    "La Villette":["Pantin"],
-    "Villette":["Villette-sur-Aube"],
-    "Villeneuve":["Villeneuve-le-Comte", "Villeneuve-les-Bordes"],
-    "Saint-Jean":["Saint-Jean-Saverne"],
-    "Châlons":["Châlons-en-Champagne"],
-    "Saint-Amand":["Saint-Amand-sur-Fion"],
-    "Semilly":["Semilly-sous-Laon"],
-    "Maisons-Blanches":["Buchères"],
-    "Surville":["Montereau-Fault-Yonne"],
-    "Varennes":["Varennes-le-Grand"],
-    "Boulancourt":["Longeville-sur-la-Laisnes"],
-    "Vitry":["Vitry-le-François"],
-    "Somme-sous":["Sommesous"],
-    "Saint-Michel":["Saint-Michel-sur-Meurthe"],
-    "Saint-Hilaire":["Saint-Hilaire-sous-Romilly"],
-    "Mont-Louis":["Charonne"],
-    "Corbeil":["Corbeil-Essonnes"]
-}
+def get_appariement(lieux_appariements, lieu):
+    for appariement in lieux_appariements:
+        if lieu in appariement["appariement"]:
+            return appariement["resultats"]
+    return None
 
 
 def get_lieux():
@@ -70,6 +37,7 @@ def get_lieux():
 
 
 def requete(l):
+    print(l)
     countrycodes = 'fr,de,ch,be,lu,nl'
     time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
     try:
@@ -113,11 +81,27 @@ accepted_types = [
     "wood"
 ]
 
+with open("appariements_lieux.json", "r") as f:
+    appariements = json.load(f)
+
+lieux_appariements = []
+
+for appariement in tqdm(appariements):
+    resultats_appariements = []
+    for l in appariement:
+        response = requete(l)
+        data = response.json()
+        if data:
+            for d in data:
+                if d["type"] in accepted_types:
+                    resultats_appariements.append({"lat":d['lat'], "lon":d['lon'], "type":d["type"]})
+    lieux_appariements.append({"appariement":appariement,"resultats":resultats_appariements})
+
+
+
 # Résultats : dictionnaire {nom: {lat: ..., lon: ...}}
 resultats = []
-points = []
-noms = []
-types = []
+
 # Boucle sur les lieux
 for lieu in tqdm(lieux):
     liste_lieux = lieu.split(";")
@@ -125,29 +109,17 @@ for lieu in tqdm(lieux):
     lon = 0
     compte = 0
     for l in liste_lieux:
-        response = requete(l)
-        data = response.json()
-        if data:
-            for d in data:
-                if d["type"] in accepted_types:
-                    resultats.append({"lieu":lieu, "lat":d['lat'], "lon":d['lon'], "type":d["type"]})
-                    points.append(Point(d['lon'], d['lat']))
-                    noms.append(lieu)
-                    types.append(d["type"])
-    
-        if l in list(nouveaux_noms.keys()):
-            for nouveau_nom in nouveaux_noms[l]:
-                response = requete(nouveau_nom)
-                data = response.json()
-                if data:
-                    for d in data:
-                        if d["type"] in accepted_types:
-                            resultats.append({"lieu":lieu, "lat":d['lat'], "lon":d['lon'], "type":d["type"]})
-                            points.append(Point(d['lon'], d['lat']))
-                            noms.append(lieu)
-                            types.append(d["type"])
-
-
+        lieux_equivalents = get_appariement(lieux_appariements, l)
+        if lieux_equivalents is not None:
+            for l_equi in lieux_equivalents:
+                resultats.append({"lieu":l, "lat":l_equi['lat'], "lon":l_equi['lon']})
+        else:
+            response = requete(l)
+            data = response.json()
+            if data:
+                for d in data:
+                    if d["type"] in accepted_types:
+                        resultats.append({"lieu":lieu, "lat":d['lat'], "lon":d['lon'], "type":d["type"]})
 
 
 # Sauvegarder les résultats dans un fichier JSON
@@ -155,6 +127,3 @@ with open('coordonnees.json', 'w', encoding='utf-8') as f:
     json.dump(resultats, f, ensure_ascii=False, indent=2)
 
 print("Terminé. Coordonnées sauvegardées dans 'coordonnees.json'")
-    
-
-gpd.GeoDataFrame({"lieu":noms, "type":types, "geometry":points}).set_crs(epsg=4326).to_file("coordonnees.gpkg")

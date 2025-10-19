@@ -1,9 +1,8 @@
 # A faire
 
-[ ] Modifier la mise en page de la description du site (sur une autre page ?)
-[ ] Ajouter carte 1:25000 si possible ?
-[ ] Ajouter quelques cartes
-[ ] Compléter la bibliographie
+[ ] Préciser quand les dates sont incertaines (et ajouter un filtre ?)
+[ ] Décaler les symboles combat par rappor aux symboles unités
+[ ] Pour la localisation des combats, utiliser le lieu avec le plus d'unités le même jour
 
 
 
