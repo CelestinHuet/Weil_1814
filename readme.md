@@ -80,6 +80,7 @@ python complete_dates.py
 
 Géolocaliser les lieux
 ```
+python merge_geolocalisation.py
 python geolocalisation.py
 ```
 
