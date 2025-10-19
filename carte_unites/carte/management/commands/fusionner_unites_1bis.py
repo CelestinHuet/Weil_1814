@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 from carte.models import Unite, Subordonne, Commande
 import difflib
 import logging
+from tqdm import tqdm
+from typing import List
 
 logging.basicConfig(
     filename='fusionner_unites_1bis.log',           # Nom du fichier de log
@@ -10,83 +12,131 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s' # Format du message de log
 )
 
+
+
+class UniteVoisin:
+
+    def __init__(self, unite:Unite):
+        self.unite = unite
+        self.voisins:List[UniteVoisin] = []
+        self.done = False
+
+    def add(self, voisin:Unite):
+        self.voisins.append(voisin)
+
+
+    def __str__(self):
+        return self.unite.nom
+
+
 class Command(BaseCommand):
 
     """
     On regroupe les généraux qui ont presque le même nom
-    """
+    """    
+
+    def add(self, appariements, unite_i, unite_j):
+        logging.info(f"On ajoute {unite_i.nom} et {unite_j.nom}")
+        for appariement in appariements:
+            if unite_i in appariement:
+                appariement.append(unite_j)
+                return appariements
+            elif unite_j in appariement:
+                appariement.append(unite_i)
+                return appariements
+        appariements.append([unite_i, unite_j])
+        return appariements
     
 
-    def detecter_ressemblance(self):
-        unites_general = []
-        unites = Unite.objects.all()
-        for unite in unites:
-            if unite.is_general():
-                unites_general.append(unite)
+    def get_all_voisins(self, unite:UniteVoisin):
+        a_visiter = [unite]
+        done = []
+        appariements = []
         
-
-        for i in range(len(unites_general)):
-            unite_0 = unites_general[i]
-            for j in range(i+1, len(unites_general)):
-                unite_1 = unites_general[j]
-                ratio = difflib.SequenceMatcher(None, unite_0.nom, unite_1.nom).ratio()
-                if ratio > 0.9:
-                    positions_0 = len(unite_0.positions.all())
-                    positions_1 = len(unite_1.positions.all())
-                    print("")
-                    print(f"{unite_0.nom} - {unite_1.nom} : {ratio}")
-                    if positions_0 > positions_1:
-                        print(f"On remplace {unite_1.nom} par {unite_0.nom} : {positions_0} - {positions_1}")
-                        return True, unite_1, unite_0
-                    else:
-                        print(f"On remplace {unite_0.nom} par {unite_1.nom} : {positions_0} - {positions_1}")
-                        return True, unite_0, unite_1
-        return False, None, None
+        while len(a_visiter)>0:
+            v = a_visiter.pop()
+            for voisin in v.voisins:
+                if voisin not in a_visiter and voisin not in done:
+                    a_visiter.append(voisin)
+            appariements.append(v)
+            done.append(v)
+        return appariements
 
 
 
     def handle(self, *args, **options):
 
+        unites = Unite.objects.all()
+        unites_voisins:List[UniteVoisin] = []
+
+        for unite in tqdm(unites):
+            unites_voisins.append(UniteVoisin(unite))
         
-        changement = True
-        while changement:
+        for i in tqdm(range(len(unites_voisins))):
+            unite_i = unites_voisins[i]
+            for j in range(i+1, len(unites_voisins)):
+                unite_j = unites_voisins[j]
+                ratio = difflib.SequenceMatcher(None, unite_i.unite.nom, unite_j.unite.nom).ratio()
+                if ratio > 0.9:
+                    unite_i.add(unite_j)
+                    unite_j.add(unite_i)
+            #if i > 5:
+            #    break
 
-            changement, unite_remplacee, unite_remplacant = self.detecter_ressemblance()
-            if changement:
-                unites_noms = [unite_remplacee, unite_remplacant]
+        appariements = []
+        for unite in unites_voisins:
+            if not unite.done:
+                appariement = self.get_all_voisins(unite)
+                if len(appariement)>=2:
+                    for u in appariement:
+                        u.done = True
+                    appariements.append(appariement)
+        
+        for appariement in tqdm(appariements):
+            print(appariement[0].unite.nom, len(appariement))
+            logging.info("")
+            maximum = 0
+            unite_max = appariement[0].unite
+            for unite in appariement:
+                nb_positions = len(unite.unite.positions.all())
+                if nb_positions > maximum:
+                    maximum = nb_positions
+                    unite_max = unite.unite
+                logging.info(f"{unite} : {len(unite.unite.positions.all())}")
 
-                new_unite = Unite.objects.create(
-                    nom=unite_remplacant.nom,
-                    grade=unite_remplacant.grade,
-                    camp=unite_remplacant.camp
+            new_unite = Unite.objects.create(
+                    nom=unite_max.nom,
+                    grade=unite_max.grade,
+                    camp=unite_max.camp
                 )
-                logging.info(f"\n On crée une nouvelle unité : {new_unite.nom}, pk = {new_unite.pk}")
-            
-                # On remplace toutes les unités par la nouvelle unité
-                for u in unites_noms:
-                    for p in u.positions.all():
-                        new_unite.positions.add(p)
-                    new_unite.save()
+            logging.info(f"\n On crée une nouvelle unité : {new_unite.nom}, pk = {new_unite.pk}")
+        
+            # On remplace toutes les unités par la nouvelle unité
+            for un in appariement:
+                u = un.unite
+                for p in u.positions.all():
+                    new_unite.positions.add(p)
+                new_unite.save()
+                subordonnee = Subordonne.objects.filter(unite_commandant=u)
+                for s in subordonnee:
+                    s.unite_commandant = new_unite
+                    s.save()
+                subordonnee = Subordonne.objects.filter(unite_subordonnee=u)
+                for s in subordonnee:
+                    s.unite_subordonnee = new_unite
+                    s.save()
+                commande = Commande.objects.filter(general=u)
+                for c in commande:
+                    c.general = new_unite
+                    c.save()
+                commande = Commande.objects.filter(unite_commandee=u)
+                for c in commande:
+                    c.unite_commandee = new_unite
+                    c.save()
+            for un in appariement:
+                u = un.unite
+                logging.info(f"On supprime l'unité {u.nom}, pk = {u.pk}")
+                u.save()
+                u.delete()
 
-                    subordonnee = Subordonne.objects.filter(unite_commandant=u)
-                    for s in subordonnee:
-                        s.unite_commandant = new_unite
-                        s.save()
-                    subordonnee = Subordonne.objects.filter(unite_subordonnee=u)
-                    for s in subordonnee:
-                        s.unite_subordonnee = new_unite
-                        s.save()
-                    commande = Commande.objects.filter(general=u)
-                    for c in commande:
-                        c.general = new_unite
-                        c.save()
-                    commande = Commande.objects.filter(unite_commandee=u)
-                    for c in commande:
-                        c.unite_commandee = new_unite
-                        c.save()
-
-                logging.info(f"\n On supprime l'unité {unite_remplacee.nom}, pk = {unite_remplacee.pk}")
-                logging.info(f"\n On supprime l'unité {unite_remplacant.nom}, pk = {unite_remplacant.pk}")
-                unite_remplacee.delete()
-                unite_remplacant.delete()
-                
+        logging.info(f"Nombre d'unités restantes : {len(Unite.objects.all())}")
