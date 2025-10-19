@@ -30,6 +30,9 @@ Koch_T1/*
 Koch_T2/*
 Marmont/*
 Segur/*
+Vaudoncourt_T1/*
+Vaudoncourt_T2/*
+Plotho_T3/*
 *.pyc
 *.sqlite3
 
@@ -44,3 +47,6 @@ settings.py
 
 carte_unites/carte/static/fond_carte/*
 cartographie/*
+
+
+auto.sh
