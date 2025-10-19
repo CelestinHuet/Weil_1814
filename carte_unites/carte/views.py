@@ -142,7 +142,7 @@ def positions_par_date(request):
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [combat.lieu.longitude, combat.lieu.latitude]
+                        "coordinates": [combat.lieu.longitude, combat.lieu.latitude - pas]
                     },
                     
                     "properties": {
