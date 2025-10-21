@@ -64,7 +64,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         directory = Path(options.get("directory"))
         files = sorted([i for i in os.listdir(directory) if i[-5:]==".json"])
-        for i, file in tqdm(enumerate(files)):
+        for i, file in tqdm(enumerate(files), total=len(files)):
 
             #if i >= 100:
             #    break
@@ -150,7 +150,8 @@ class Command(BaseCommand):
                     planifie=position_dict["planifie"],
                     justification=position_dict["details"],
                     effectif=position_dict["effectif"],
-                    source=file.replace("-", " p.").replace(".json", "")
+                    source=file.replace("-", " p.").replace(".json", ""),
+                    date_approx=position_dict["date_approx"]
                 )
 
                 for unite in unites:
@@ -169,7 +170,8 @@ class Command(BaseCommand):
                 combat, created = Combat.objects.get_or_create(
                     nom=nom,
                     date=date_combat,
-                    lieu_str=position_lieu
+                    lieu_str=position_lieu,
+                    date_approx=combat_dict["date_approx"]
                 )
                 if created:
                     logging.info(f"On crée le combat {combat.pk} : {combat}")

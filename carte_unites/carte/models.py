@@ -27,6 +27,7 @@ class Position(models.Model):
     lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True, related_name="position")
     lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
+    date_approx = models.BooleanField(default=False)
     planifie = models.BooleanField(default=False)
     justification = models.TextField(blank=True, null=True)
     effectif = models.CharField(max_length=100, blank=True, null=True)
@@ -139,6 +140,7 @@ class Combat(models.Model):
     lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True, related_name="lieu_combat")
     lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
+    date_approx = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.nom} ({self.date})"

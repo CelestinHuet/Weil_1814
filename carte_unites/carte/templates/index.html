@@ -55,6 +55,10 @@
                         <input type="checkbox" id="planifieSelect" name="type">
                         Masquer les lieux objectifs
                     </label>
+                    <label>
+                        <input type="checkbox" id="dateApproxSelect" name="type">
+                        Masquer les dates approximatives
+                    </label>
                 </div>
                 <div id="titre_odb">
                   <label>A sous ses ordres : </label>
@@ -450,15 +454,22 @@
       })
     }
 
-    
-    // Filtre sur l'état "planifié" des positions
+    // Gestion du filtre sur les dates approximatives et les mouvements planifiés
     document.getElementById('filters').addEventListener('change', (e) => {
-      const value = document.getElementById("planifieSelect").checked;     
-      // Si "Tous", on retire le filtre
-      if  (value) {
+      const valuePlanifie = document.getElementById("planifieSelect").checked;
+      const valueDateApprox = document.getElementById("dateApproxSelect").checked;     
+      if  (valuePlanifie && valueDateApprox) {
+        map.setFilter(
+          'unit-points', 
+          "all",
+          ["==", ["get", "date_approx"], false],
+          ["==", ["get", "planifie"], false]
+        );
+      } else if (valuePlanifie) {
         map.setFilter('unit-points', ['==', ['get', 'planifie'], false]);
+      } else if (valueDateApprox) {
+        map.setFilter('unit-points', ['==', ['get', 'date_approx'], false]);
       } else {
-        // Sinon, on applique un filtre sur la propriété "type"
         map.setFilter('unit-points', null);
       }
     });

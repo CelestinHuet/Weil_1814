@@ -46,6 +46,7 @@ json_files = [[i, int(i.replace(".json", "").split("-")[1])] for i in os.listdir
 
 list_dates = []
 
+# Pour chaque fichier json, on récupère la date et on met un champ nouvelle date
 for json_file in sorted(json_files):
     with open(input_dir/json_file[0], "r") as f:
         data = json.load(f)
@@ -57,27 +58,35 @@ for json_file in sorted(json_files):
         }
     )
 
+# On parcourt chaque fichier json
 for i in range(len(list_dates)-5):
     d0 = list_dates[i]
+    # Si on a déjà mis une nouvelle date, on passe au fichier suivant
     if d0["nouvelle_date"] is not None:
         continue
+    # Si la date n'est pas valide, on passe au fichier suivant
     if not date_valide(d0["date"]):
         continue
+    # On parcourt les cinq fichiers suivants. Si l'un des cinq a la même date que le fichier en cours
+    # alors on s'arrête
     for j in range(5, 0, -1):
         if list_dates[i+j]["date"]==d0["date"]:
             break
+    # On rempli le champ nouvelle date pour chaque fichier json
+    #  intercalé entre les deux à la cndition qu'il n'a pas la même date 
     for k in range(1, j):
         if list_dates[i+k]["date"]!=d0["date"] and list_dates[i+k]["nouvelle_date"] is None:
             print(f"Dans {list_dates[i+k]["file"]}, on remplace {list_dates[i+k]["date"]} par {d0["date"]}")
             list_dates[i+k]["nouvelle_date"] = d0["date"]
 
-
+# On parcourt chaque fichier json
 current_date = "01/12/1813"
 for element in list_dates:
     filename = element["file"][0]
     with open(input_dir/filename, "r") as f:
         data = json.load(f)
 
+        # On récupère la date remlaçant : celle récupérée précédemment, celle issue de Gemini, ou current date
         if date_valide(element["nouvelle_date"]):
             date_remplacant = element["nouvelle_date"]
         elif date_valide(element["date"]):
@@ -86,18 +95,26 @@ for element in list_dates:
             date_remplacant = current_date
 
         print(filename, date_remplacant)
+        
+        # Pour chaque position ou combat, si la date n'est pas valide, on la remplace par date_remplacant
         for position in data["positions"]:
             if not date_valide(position["date"]):
-                position["date"] = current_date
+                position["date"] = date_remplacant
+                position["date_approx"] = True
+            else:
+                position["date_approx"] = False
 
         for odb in data["ordre_de_bataille"]:
-            odb["date"] = current_date
+            odb["date"] = date_remplacant
 
         if not "combat" in data.keys():
             continue
         for combat in data["combat"]:
             if not date_valide(combat["date"]):
-                combat["date"] = current_date
+                combat["date"] = date_remplacant
+                combat["date_approx"] = True
+            else:
+                combat["date_approx"] = False
 
         data["date"] = date_remplacant
 

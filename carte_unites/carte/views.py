@@ -35,13 +35,18 @@ def position_in_list(list, position, unite):
 
 def write_popup(props):
 
+    if props["date_approx"]:
+        date = "~" + str(props["date"])
+    else:
+        date = str(props["date"])
+
 
     popup = f"""
     <div class="map-popup" role="dialog" aria-label="Détails de l'unité">
         <div class="map-popup__header">
             <div class="map-popup__title">{props["unite"]}</div>
             <div class="map-popup__meta">
-            <time class="map-popup__date" datetime="2025-09-15">{props["date"]}</time>
+            <time class="map-popup__date" datetime="2025-09-15">{date}</time>
             <span class="map-popup__location">{props["lieu"]}</span>
             </div>
         </div>
@@ -117,6 +122,7 @@ def positions_par_date(request):
                     "properties": {
                         "unite":unite.nom,
                         "date":pos.date,
+                        "date_approx":pos.date_approx,
                         "lieu":pos.lieu.nom,
                         "planifie":[pos.planifie],
                         "justification":[pos.justification],
@@ -148,14 +154,20 @@ def positions_par_date(request):
                     "properties": {
                         "nom":combat.nom,
                         "date":combat.date,
+                        "date_approx":combat.date_approx,
                         "lieu":combat.lieu_str
                     }
                 })
             
     for combat_feature in combats_features:
-        popup = f"""
-        <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
-        """
+        if combat_feature['properties']['date_approx']:
+            popup = f"""
+            <strong>{combat_feature['properties']['nom']} (~{combat_feature['properties']['date']})</strong>
+            """
+        else:
+            popup = f"""
+            <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
+            """
         combat_feature["properties"]["popup"] = popup
 
     return JsonResponse({
@@ -218,6 +230,7 @@ def positions_par_unite(request):
                     "properties": {
                         "unite":unite.nom,
                         "date":pos.date,
+                        "date_approx":pos.date_approx,
                         "lieu":pos.lieu.nom,
                         "planifie":[pos.planifie],
                         "justification":[pos.justification],
@@ -242,6 +255,7 @@ def positions_par_unite(request):
                         "properties": {
                             "nom":combat.nom,
                             "date":combat.date,
+                            "date_approx":combat.date_approx,
                             "lieu":combat.lieu_str
                         }
                     })
@@ -254,9 +268,14 @@ def positions_par_unite(request):
 
 
     for combat_feature in combats_features:
-        popup = f"""
-        <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
-        """
+        if combat_feature['properties']['date_approx']:
+            popup = f"""
+            <strong>{combat_feature['properties']['nom']} (~{combat_feature['properties']['date']})</strong>
+            """
+        else:
+            popup = f"""
+            <strong>{combat_feature['properties']['nom']} ({combat_feature['properties']['date']})</strong>
+            """
         combat_feature["properties"]["popup"] = popup
     odb = unite_0.get_ordre_de_bataille()
 
