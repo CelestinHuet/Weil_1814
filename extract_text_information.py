@@ -57,12 +57,14 @@ class Combat(BaseModel):
     nom_affrontement:str
     date:str
     lieu:str
+    details:str
 
     def to_dict(self):
         return {
             "nom_affrontement":self.nom_affrontement,
             "lieu":self.lieu,
             "date":self.date,
+            "details":self.details
         }
 
 
@@ -110,6 +112,7 @@ for input_file in tqdm(input_files):
             config={
                 "response_mime_type": "application/json",
                 "response_schema": Schema,
+                "temperature":0.0,
             },
         )
     except Exception as e:
