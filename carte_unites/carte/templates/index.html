@@ -465,12 +465,15 @@
           ["==", ["get", "date_approx"], false],
           ["==", ["get", "planifie"], false]
         );
+        map.setFilter('batailles-layer', ['==', ['get', 'date_approx'], false]);
       } else if (valuePlanifie) {
         map.setFilter('unit-points', ['==', ['get', 'planifie'], false]);
       } else if (valueDateApprox) {
         map.setFilter('unit-points', ['==', ['get', 'date_approx'], false]);
+        map.setFilter('batailles-layer', ['==', ['get', 'date_approx'], false]);
       } else {
         map.setFilter('unit-points', null);
+        map.setFilter('batailles-layer', null);
       }
     });
 

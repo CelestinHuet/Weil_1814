@@ -171,7 +171,9 @@ class Command(BaseCommand):
                     nom=nom,
                     date=date_combat,
                     lieu_str=position_lieu,
-                    date_approx=combat_dict["date_approx"]
+                    date_approx=combat_dict["date_approx"],
+                    justification=combat_dict["details"],
+                    source=file.replace("-", " p.").replace(".json", ""),
                 )
                 if created:
                     logging.info(f"On crée le combat {combat.pk} : {combat}")

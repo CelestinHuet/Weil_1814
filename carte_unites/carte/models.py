@@ -141,6 +141,8 @@ class Combat(models.Model):
     lieu_str = models.CharField(max_length=300, blank=True, null=True)
     date = models.DateField()
     date_approx = models.BooleanField(default=False)
+    justification = models.TextField(blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f"{self.nom} ({self.date})"
