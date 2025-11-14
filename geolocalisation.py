@@ -38,7 +38,7 @@ def get_lieux():
 
 def requete(l):
     print(l)
-    countrycodes = 'fr,de,ch,be,lu,nl'
+    countrycodes = 'fr,de,ch,be,lu,nl,it' # France, Allemagne, Suisse, Belgique, Luxembourg, Pays-bas, Italie
     time.sleep(1)  # pause pour respecter les règles de l'API (1 req/s)
     try:
         response = requests.get(
@@ -60,7 +60,7 @@ def requete(l):
                 'q': l,  # on précise France pour éviter les homonymes
                 'format': 'json',
                 'limit': 100,
-                'countrycodes': countrycodes,  # France, Allemagne, Suisse, Blegique, Luxembourg, Pays-bas
+                'countrycodes': countrycodes,
             },
             headers={'User-Agent': 'geo-script/1.0'}
         )
