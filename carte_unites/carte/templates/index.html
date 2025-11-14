@@ -456,14 +456,16 @@
 
     // Gestion du filtre sur les dates approximatives et les mouvements planifiés
     document.getElementById('filters').addEventListener('change', (e) => {
-      const valuePlanifie = document.getElementById("planifieSelect").checked;
+      const valuePlanifie = document.getElementById("planifieSelect").checked;      
       const valueDateApprox = document.getElementById("dateApproxSelect").checked;     
       if  (valuePlanifie && valueDateApprox) {
         map.setFilter(
           'unit-points', 
-          "all",
-          ["==", ["get", "date_approx"], false],
-          ["==", ["get", "planifie"], false]
+          [
+            "all",
+            ["==", ["get", "date_approx"], false],
+            ["==", ["get", "planifie"], false]
+          ]
         );
         map.setFilter('batailles-layer', ['==', ['get', 'date_approx'], false]);
       } else if (valuePlanifie) {
