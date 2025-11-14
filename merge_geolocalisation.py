@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import difflib
 import os
+from tqdm import tqdm
 
 appariements = [
     ["Ligny","Ligny-en-Barrois"],
@@ -80,7 +81,7 @@ def add(appariements, nom1, nom2):
 
 lieux = list(get_lieux())
 print(len(lieux))
-for i in range(len(lieux)):
+for i in tqdm(range(len(lieux))):
     for j in range(i+1, len(lieux)):
         nom_i = lieux[i]
         nom_j = lieux[j]
