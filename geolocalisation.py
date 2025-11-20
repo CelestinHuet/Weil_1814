@@ -9,6 +9,8 @@ from tqdm import tqdm
 
 
 
+input_dir = "resultats_v2_merge"
+
 def get_appariement(lieux_appariements, lieu):
     for appariement in lieux_appariements:
         if lieu in appariement["appariement"]:
@@ -18,9 +20,9 @@ def get_appariement(lieux_appariements, lieu):
 
 def get_lieux():
     lieux = []
-    json_files = [i for i in os.listdir("resultats") if i[-5:]==".json"]
+    json_files = [i for i in os.listdir(input_dir) if i[-5:]==".json"]
     for file in json_files:
-        with open(os.path.join("resultats", file), 'r') as f:
+        with open(os.path.join(input_dir, file), 'r') as f:
             data = json.load(f)
             for d in data["positions"]:
                 positions_split = d["lieu"].split(";")
