@@ -32,6 +32,19 @@ def position_in_list(list, position, unite):
     return None
 
 
+def combat_in_list(list, combat:Combat):
+    if combat.date is None:
+        date_combat = combat.date_approx
+    else:
+        date_combat = combat.date
+    for feature in list:
+        if feature["properties"]["date"] is None:
+            date_feature = feature["properties"]["date_approx"]
+        else:
+            date_feature = feature["properties"]["date"]
+        if feature["properties"]["lieu"]==combat.lieu_str and date_combat==date_feature:
+            return feature
+    return None
 
 def write_popup(props):
 
@@ -98,16 +111,23 @@ def write_popup_combat(props):
 
 
         <blockquote class="map-popup__quote map-popup__quote--collapsed" id="quote1">
-        <p>
-        {props["justification"]} - ({props["source"]}).
-        </p>
+        """
+    for i in range(len(props["justification"])):
+        popup += f"""
+            <p>
+            {props["justification"][i]} - ({props["source"][i]}).
+            </p>
+            """
+
+    popup += """
         </blockquote>
 
         <button class="map-popup__toggle" aria-expanded="false" aria-controls="quote1">Lire la suite</button>
 
 
         </div>
-        """
+
+    """
     return popup
 
 
@@ -177,22 +197,30 @@ def positions_par_date(request):
     combats = Combat.objects.filter(date=date_dt)
     for combat in combats:
         if combat.lieu is not None:
-            combats_features.append({
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Point",
-                        "coordinates": [combat.lieu.longitude, combat.lieu.latitude - pas]
-                    },
-                    
-                    "properties": {
-                        "nom":combat.nom,
-                        "date":combat.date,
-                        "date_approx":combat.date_approx,
-                        "lieu":combat.lieu_str,
-                        "justification":combat.justification,
-                        "source":combat.source
-                    }
-                })
+            feature = combat_in_list(combats_features, combat)
+
+            if feature is None:
+                combats_features.append({
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [combat.lieu.longitude, combat.lieu.latitude - pas]
+                        },
+                        
+                        "properties": {
+                            "nom":combat.nom,
+                            "date":combat.date,
+                            "date_approx":combat.date_approx,
+                            "lieu":combat.lieu_str,
+                            "justification":[combat.justification],
+                            "source":[combat.source]
+                        }
+                    })
+            
+            else:
+                feature["properties"]["justification"].append(combat.justification)
+                feature["properties"]["source"].append(combat.source)
+
             
     for combat_feature in combats_features:
         combat_feature["properties"]["popup"] = write_popup_combat(combat_feature["properties"])
@@ -272,22 +300,29 @@ def positions_par_unite(request):
             combats = pos.lieu.lieu_combat.all()
             for combat in combats:
                 if combat.date==pos.date:
-                    combats_features.append({
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [combat.lieu.longitude, combat.lieu.latitude]
-                        },
-                        
-                        "properties": {
-                            "nom":combat.nom,
-                            "date":combat.date,
-                            "date_approx":combat.date_approx,
-                            "lieu":combat.lieu_str,
-                            "justification":combat.justification,
-                            "source":combat.source
-                        }
-                    })
+                    feature = combat_in_list(combats_features, combat)
+
+                    if feature is None:
+                        combats_features.append({
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [combat.lieu.longitude, combat.lieu.latitude - pas]
+                                },
+                                
+                                "properties": {
+                                    "nom":combat.nom,
+                                    "date":combat.date,
+                                    "date_approx":combat.date_approx,
+                                    "lieu":combat.lieu_str,
+                                    "justification":[combat.justification],
+                                    "source":[combat.source]
+                                }
+                            })
+                    
+                    else:
+                        feature["properties"]["justification"].append(combat.justification)
+                        feature["properties"]["source"].append(combat.source)
 
 
     for feature in features:
@@ -297,8 +332,11 @@ def positions_par_unite(request):
 
 
     for combat_feature in combats_features:
-        combat_feature["properties"]["popup"] = combat_feature["properties"]
+        combat_feature["properties"]["popup"] = write_popup_combat(combat_feature["properties"])
     odb = unite_0.get_ordre_de_bataille()
+    for c in combats_features:
+        print(c)
+
 
     return JsonResponse({
             "position":{
