@@ -52,11 +52,11 @@
 
                 <div class="view-options" id="filters">
                     <label>
-                        <input type="checkbox" id="planifieSelect" name="type">
+                        <input type="checkbox" id="planifieSelect" name="type" checked>
                         Masquer les lieux objectifs
                     </label>
                     <label>
-                        <input type="checkbox" id="dateApproxSelect" name="type">
+                        <input type="checkbox" id="dateApproxSelect" name="type" checked>
                         Masquer les dates approximatives
                     </label>
                 </div>
@@ -372,6 +372,7 @@
       });
 
       updateDataDate("1814-01-01");
+      filter();
     });
 
     // Pop-up sur les positions
@@ -454,8 +455,7 @@
       })
     }
 
-    // Gestion du filtre sur les dates approximatives et les mouvements planifiés
-    document.getElementById('filters').addEventListener('change', (e) => {
+    function filter(){
       const valuePlanifie = document.getElementById("planifieSelect").checked;      
       const valueDateApprox = document.getElementById("dateApproxSelect").checked;     
       if  (valuePlanifie && valueDateApprox) {
@@ -477,6 +477,11 @@
         map.setFilter('unit-points', null);
         map.setFilter('batailles-layer', null);
       }
+    }
+
+    // Gestion du filtre sur les dates approximatives et les mouvements planifiés
+    document.getElementById('filters').addEventListener('change', (e) => {
+      filter();
     });
 
     // On remplit le <select> avec le nom des unités
