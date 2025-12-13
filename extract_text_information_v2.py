@@ -224,7 +224,7 @@ for directory in directories:
             print(f"response.parsed is None : {output_file}")
             print(response)
             print(response.text)
-            print(response.candidates[0].content.parts)
+            #print(response.candidates[0].content.parts)
         
 
         

@@ -47,34 +47,19 @@ Les ouvrages utilisés sont les suivants :
 
 # Processus
 
-Le livre sous format pdf est découpé en page puis transformé en format texte avec Tesseract.
-
+Le livre sous format pdf est découpé en page, sauvegardée chacune sous format png
 ```
-python convert_pdf_to_text.py --input_pdf [fichier]   --begin [premiere_page]   --end [deni_]
-```
-
-Il faut mettre au propre les pages : retirer les numéros de page et mettre à part les notes.
-```
-python create_prompt_mise_au_propre.py
-python mise_au_propre.py
+python convert_pdf_to_image.py --input_pdf [fichier]   --begin [premiere_page]   --end [dernière page]
 ```
 
-Regrouper les paragraphes qui sont séparés sur deux pages
+Gemini extrait les informations
 ```
-python mise_au_propre_json_to_txt.py
-python regrouper_paragraphes.py --input resultats_mise_au_propre/corps
-python regrouper_paragraphes.py --input resultats_mise_au_propre/notes
+python extract_text_information_v2.py
 ```
 
-Extraire les informations des pages
+Compléter les dates manquantes et regrouper tous les éléments par livre
 ```
-python create_prompt.py
-python extract_text_information.py
-```
-
-Compléter les dates manquantes 
-```
-python complete_dates.py
+python merge_extraction.py
 ```
 
 Géolocaliser les lieux
@@ -91,7 +76,7 @@ python manage.py insert_lieux --file ../coordonnees.json
 
 Insérer les unités dans la base de données
 ```
-python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
+python manage.py insert_unites --directory ../resultats_v2_merge
 ```
 
 Fusionner tous les généraux qui ont le même nom
@@ -130,7 +115,7 @@ python manage.py flush
 
 ```
 python manage.py insert_lieux --file ../coordonnees.json
-python manage.py insert_unites --directory ../resultats/gemini_2-5_dates_corrected
+python manage.py insert_unites --directory ../resultats_v2_merge
 python manage.py fusionner_unites
 python manage.py fusionner_unites_1bis
 python manage.py fusionner_unites_etape_2

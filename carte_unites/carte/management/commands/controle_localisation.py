@@ -19,10 +19,12 @@ class Command(BaseCommand):
             self.erreurs[l]["compte"]+=1
             if voisin not in self.erreurs[l]["voisins"]:
                 self.erreurs[l]["voisins"].append(voisin)
+                self.erreurs[l]["unites"] += list(p_remove.unites.all())
         else:
             self.erreurs[l] = {
                 "compte":1,
-                "voisins":[voisin]
+                "voisins":[voisin],
+                "unites":list(p_remove.unites.all())
             }
         
         for u in p_remove.unites.all():
@@ -86,7 +88,7 @@ class Command(BaseCommand):
         trie = dict(sorted(self.erreurs.items(), key=lambda item: item[1]["compte"], reverse=True))
         for key, value in trie.items():
             print()
-            print(f"{key} : {value["compte"]}, {value["voisins"]}")
+            print(f"{key} : {value["compte"]}, {value["voisins"]}, {value["unites"]}")
 
         with open("controle_localisation.txt", "w") as f:
             for key, value in trie.items():

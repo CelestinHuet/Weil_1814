@@ -41,7 +41,8 @@ appariements = [
     ["Saint-Hilaire","Saint-Hilaire-sous-Romilly"],
     ["Mont-Louis","Charonne"],
     ["Corbeil","Corbeil-Essonnes"],
-    ["Marchais", "Marchais-en-Brie"]
+    ["Marchais", "Marchais-en-Brie"],
+    ["Vandoeuvres", "Vendeuvre-sur-Barse"]
 ]
 
 

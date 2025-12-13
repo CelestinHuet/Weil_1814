@@ -144,13 +144,14 @@ class Command(BaseCommand):
                     position_dict["planifie"]=True
                 # On crée la position
 
+                source = f"{file.replace("-", " p.").replace(".json", "")}_ {position_dict["page"]}"
                 position = Position.objects.create(
                     lieu_str=position_lieu,
                     date=date_position,
                     planifie=position_dict["planifie"],
                     justification=position_dict["details"],
                     effectif=position_dict["effectif"],
-                    source=file.replace("-", " p.").replace(".json", ""),
+                    source=source,
                     date_approx=position_dict["date_approx"]
                 )
 
@@ -167,13 +168,14 @@ class Command(BaseCommand):
                 nom = combat_dict["nom_affrontement"]
                 position_lieu = combat_dict["lieu"]
                 date_combat = self.convert_date(combat_dict["date"])
+                source = f"{file.replace("-", " p.").replace(".json", "")}_ {combat_dict["page"]}"
                 combat, created = Combat.objects.get_or_create(
                     nom=nom,
                     date=date_combat,
                     lieu_str=position_lieu,
                     date_approx=combat_dict["date_approx"],
                     justification=combat_dict["details"],
-                    source=file.replace("-", " p.").replace(".json", ""),
+                    source=source,
                 )
                 if created:
                     logging.info(f"On crée le combat {combat.pk} : {combat}")
