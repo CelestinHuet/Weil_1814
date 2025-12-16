@@ -35,7 +35,7 @@
         <div class="bloc">
           <h4>Introduction</h4>
           <p>
-            Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier n'est pas représenté, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
+            Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier ne sont pas représentés, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
           </p>
 
           <p>
@@ -62,14 +62,14 @@
             Schématiquement, la démarche est la suivante :
             <ul>
               <li>Les ouvrages sont convertis en format image</li>
-              <li>Chaque page de chaque ouvrage est passée à un LLM, en l'occurence Gemini Pro 2.5, qui extrait les positions des unités, les dates, le camp des unités, les relations de commandement et de subordination entre les unités et les combats. Une unité peut être un général ou bien une entité comme un corps d'armée, une division... Une distinction est faite entre les positions qui sont des objectifs (le général donne l'ordre de se porter sur telle ville) et les positions qui sont réellement occupées par les unités.</li>
+              <li>Les pages sont passées à un LLM, en l'occurence Gemini 2.5 Pro, qui extrait les positions des unités, les dates, le camp des unités, les relations de commandement et de subordination entre les unités et les combats. Une unité peut être un général ou bien une entité comme un corps d'armée, une division... Une distinction est faite entre les positions qui sont des objectifs à court ou long terme (le général donne l'ordre de se porter sur telle ville) et celles qui sont réellement occupées par les unités.</li>
               <li>Via Open Street Map, on récupère les coordonnées de chaque lieu.</li>
               <li>On insère dans la base de données les unités et les lieux.</li>
               <li>On fusionne les unités qui ont le même nom.</li>
               <li>Chaque lieu peut posséder plusieurs homonymes : Bar peut aussi bien représenter Bar-sur-Aube que Bar-sur-Seine. Pour trouver l'homonyme le plus probable, on cherche pour chaque unité le chemin le plus court qu'elle peut parcourir dans la campagne.</li>
               <li>On contrôle le résultat de l'algorithme : si la moyenne journalière d'une unité est trop élevé, alors il y a une erreur de localisation.</li>
               <li>On détermine l'échelon des unités : armée, corps d'armée, division, brigade, régiment, bataillon, escadron...</li>
-              <li>On essaye de déterminer le camp pour les unités dont il n'a pas été identifié par le LLM.</li>
+              <li>On détermine le camp des unités pour lesquelles le LLM n'est pas parvenu à le déduire</li>
             </ul>
           </p>
         </div>
@@ -80,9 +80,9 @@
           <p>
             Comme l'algorithme est automatisé, il faut être conscient qu'il n'est pas parfait et que des erreurs ont pu se glisser. Voici quelques types d'erreurs déjà identifiés :
             <ul>
-              <li>Tesseract n'est pas très bon pour lire les nombres donc les dates peuvent être erronées. Quelques contrôles ont été ajoutés, mais il reste des erreurs. Il n'est pas très performants non plus sur certaines polices d'écritures et pour les noms propres. Un général peut donc être écrit de plusieurs manières différentes, et ce malgré les algorithmes de fusion d'unités. De même, les citations peuvent contenir des fautes d'ortographes.</li>
-              <li>Le numéro de page des sources peut avoir un décalage d'une page. Cela est dû au regroupement des paragraphes qui sont à cheval sur deux pages.</li>
-              <li>Certains noms de villes ou de hameaux ont été modifiés (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparus mais d'autres localités avec le même toponyme continuent d'exister. L'unité sera alors mal placée.</li>
+              <li>Le LLM n'est pas infaillible pour lire les documents, surtout si le texte est un peu effacé. Il n'est pas forcément à l'aise avec les noms propres, donc il peut restituer le texte avec des erreurs d'orthographe.</li>
+              <li>Un général peut être écrit de plusieurs manières différentes, que ce soit les différentes traductions des noms russes dans les ouvrages ou par des erreurs du LLM. Par exemple, le général Olsufiev est dénommé Olsujeff, Olsuwjew, Olsulieff, Olsufjew... L'algorithmes de fusion d'unités ne parvient pas toujours à identifier qu'il s'agit d'un unique général.</li>
+              <li>En deux siècles, certains noms de villes ou de hameaux ont changé (Sainte-Croix est actuellement Sainte-Croix-en-Plaine par exemple), voire ont complètement disparu mais d'autres localités avec le même toponyme continuent d'exister. Une trentaine de villes ont été identifiées, mais il reste probablement des erreurs.</li>
               <li>Certains lieux sont trop vagues, notamment les cours d'eau les expressions comme "rive gauche" ou les noms de région (Savoie).</li>
               <li>Dans les échelons, il peut y avoir confusion entre un corps d'armée et un autre échelon. En effet, l'expression "un corps" est régulièrement utilisée pour désigner tout type de formation.</li>
             </ul>
@@ -116,10 +116,27 @@
             Les cartes proviennent de l'<a href="https://bibliotheque-martial-lapeyre.napoleon.org/Default/doc/SYRACUSE/15686/atlas-de-l-histoire-du-consulat-et-de-l-empire-dresse-et-dessine-sous-la-direction-de-m-thiers-par-m?_lg=fr-FR">Atlas de l'histoire du Consulat et de l'Empire de Thiers</a>.
           </p>
 
-          <p>Si vous souhaitez obtenir des informations supplémentaires, suggérer de nouvelles fonctionnalités ou remonter des erreurs, n'hésitez pas à utiliser le <a href="{% url 'carte:contact' %}">formulaire de contact</a>.</p>
         </div>
         
 
+
+
+      
+
+      <div class="bloc">
+          <h4>Et ensuite ?</h4>
+
+          <p>On peut imaginer compléter ce site de plusieurs manières :</p>
+
+          <ul>
+            <li>Ajouter d'autres ouvrages sur 1814, voire ajouter d'autres campagnes</li>
+            <li>Afficher sur la carte les lettres de l'époque. Il y a dans les ouvrages de nombreuses reproductions de lettres d'époques comme pièces justificatives. Les ajouter dans le site permettrait de les répertorier et de les retrouver plus facilement.</li>
+            <li>Le LLM extrait des livres des informations sur les relations hiérarchiques entre généraux et unités. On pourrait en extraire un ordre de bataille. Une difficulté serait d'identifier les modifications qui ont lieu pendant une campagne militaire.</li>
+          </ul>
+            
+          <p>Si vous souhaitez obtenir des informations supplémentaires, suggérer de nouvelles fonctionnalités ou remonter des erreurs, n'hésitez pas à utiliser le <a href="{% url 'carte:contact' %}">formulaire de contact</a>.</p>
+
+      </div>
 
 
       </div>
