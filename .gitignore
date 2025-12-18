@@ -5,11 +5,12 @@ prompts_mise_au_propre/*
 resultats/*
 resultats_mise_au_propre/*
 resultats_save/*
+paragraphes_regroupes/*
+controle_localisation.txt
 text/*
 *.gpkg
 *.json
 *.pdf
-*.txt
 Grouchy/*
 Hiller/*
 images/*
