@@ -5,8 +5,9 @@ from django.http import JsonResponse
 from datetime import datetime
 import logging
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from .forms import ContactForm
+from carte_unites import settings
 
 logger = logging.getLogger("campagne_France_view")
 
@@ -362,12 +363,15 @@ def contact_view(request):
             message = form.cleaned_data["message"]
 
             # Envoi de l'email
-            send_mail(
-                subject=f"Message de {nom}",
-                message=message,
-                from_email=email,
-                recipient_list=["ton_adresse@mail.com"],  # à remplacer par ton email
+            emailMessage = EmailMessage(
+                subject=f"Contact de {nom}",
+                body=message,
+                from_email=settings.EMAIL_HOST_USER, # <--- Doit être VOTRE adresse Gmail
+                to=[settings.EMAIL_DESTINATAIRES], # <--- Vérifiez bien cette adresse !
+                reply_to=[email], # <--- Permet de répondre directement à l'utilisateur
             )
+
+            emailMessage.send()
 
             return redirect("carte:carte")  # redirection après envoi
     else:
