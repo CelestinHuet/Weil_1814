@@ -29,7 +29,6 @@
                 <a href="{% url 'carte:contact' %}">Contact</a>
             </div>
         </div>
-        <button id="toggleControls" class="mobile-only-btn">⚙️ Filtres</button>
     </header>
 
     <main>
@@ -73,7 +72,11 @@
         </section>
 
 
-        <div id="map"></div>
+        <div id="map">
+          <button id="toggleControls" class="mobile-only-btn floating-filter">
+            ⚙️ Filtres
+          </button>
+        </div>
       </div>      
     </main>
 </body>

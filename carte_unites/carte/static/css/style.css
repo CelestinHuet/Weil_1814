@@ -343,6 +343,11 @@
     display: none !important; 
 }
 
+/* Masqué sur ordinateur */
+.floating-filter {
+    display: none !important;
+}
+
 /* Affiché uniquement sur les écrans de moins de 768px (Mobile/Tablette) */
 @media (max-width: 768px), (max-height: 500px) {
     /* Affichage du bouton */
@@ -386,15 +391,52 @@
     header {
         position: relative;
         z-index: 1000;
+        padding: 10px;
     }
+
+    header h1 {
+        font-size: 1.1rem;
+    }
+
+    .floating-filter {
+        display: block !important;
+        position: absolute;
+        /* On descend le bouton pour laisser de la place aux contrôles de la carte */
+        top: 40px; 
+        left: 10px; 
+        z-index: 1001;
+        
+        width: auto !important;
+        padding: 8px 12px;
+        background-color: white;
+        color: #333;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        cursor: pointer;
+        transition: left 0.3s ease-in-out, top 0.3s ease-in-out;
+    }
+
+    /* Quand le menu est ouvert, il suit toujours le bord du menu */
+    .controls.open ~ #map .floating-filter {
+        left: 310px;
+        background-color: #c9a94d;
+        color: white;
+    }
+
+    
 }
 
 
 @media (max-height: 500px) and (orientation: landscape) {
     .main-container .controls {
         top: 0;
-        height: 100vh;
+        height: 105vh;
     }
-    /* Optionnel : masquer le bouton mobile en paysage si vous voulez 
-       que l'utilisateur utilise tout l'écran pour la carte */
+
+    .floating-filter {
+        top: 40px; /* Un peu plus haut car le header est souvent plus fin */
+    }
 }
