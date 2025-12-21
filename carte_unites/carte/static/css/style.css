@@ -344,14 +344,15 @@
 }
 
 /* Affiché uniquement sur les écrans de moins de 768px (Mobile/Tablette) */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 500px) {
     /* Affichage du bouton */
     .mobile-only-btn {
         display: block !important;
         margin: 10px auto;
         background-color: #c9a94d;
         color: #001f3f;
-        width: 90%;
+        width: 90%;          /* Largeur par défaut sur téléphone vertical */
+        max-width: 300px;    /* Empêche le bouton de devenir trop large en paysage ou sur tablette */
         padding: 8px;
         font-weight: bold;
         border: none;

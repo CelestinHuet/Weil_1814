@@ -404,6 +404,7 @@
 
     // Mise à jour de la carte lors de la sélection d'une unité
     document.getElementById('unitSelect').addEventListener('change', function () {
+      fermerMenuSiMobile()
       const selectedUnit = this.value;
 
       fetch(`/positions_par_unite?unite=${selectedUnit}`)
@@ -436,10 +437,18 @@
         })
       });
 
+
+    function fermerMenuSiMobile() {
+    if (window.innerWidth <= 768 || window.innerHeight <= 500) {
+        controlsPanel.classList.remove('open');
+    }
+}
+
     // Mise à jour de la carte lors de la sélection d'une date
     document.getElementById('dateSelect').addEventListener('change', function () {
       const selectedDate = this.value;
       updateDataDate(selectedDate);
+      fermerMenuSiMobile();
     });
 
 
@@ -515,6 +524,7 @@
             today.setDate(today.getDate() - 1);
             input.value = today.toISOString().split('T')[0];
         }
+        fermerMenuSiMobile();
         updateDataDate(input.value);
     }
 
@@ -532,6 +542,7 @@
           today.setDate(today.getDate() + 1);
           input.value = today.toISOString().split('T')[0];
       }
+      fermerMenuSiMobile();
       updateDataDate(input.value);
     }
 
@@ -566,15 +577,16 @@ const controlsPanel = document.querySelector('.controls');
 const headerElement = document.querySelector('header');
 
 function ajusterPositionMenu() {
-    // On ne fait le calcul que si on est en mode mobile
-    if (window.innerWidth <= 768) {
-        const headerHeight = headerElement.offsetHeight; // Mesure la hauteur réelle du bandeau
+    // On applique le calcul si largeur < 768px OU hauteur < 500px
+    if (window.innerWidth <= 768 || window.innerHeight <= 500) {
+        const headerHeight = headerElement.offsetHeight;
         controlsPanel.style.top = headerHeight + "px";
         controlsPanel.style.height = (window.innerHeight - headerHeight) + "px";
     } else {
-        // Reset pour le mode ordinateur
+        // Reset pour le mode ordinateur standard
         controlsPanel.style.top = "";
         controlsPanel.style.height = "";
+        controlsPanel.classList.remove('open');
     }
 }
 
