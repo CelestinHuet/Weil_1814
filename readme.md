@@ -1,12 +1,4 @@
-# A faire
-
-[ ] Préciser quand les dates sont incertaines (et ajouter un filtre ?)
-[ ] Pour la localisation des combats, utiliser le lieu avec le plus d'unités le même jour
-
-
-
-
-# Descriptif
+# 1814 par les cartes
 
 Les ouvrages présentant les opérations militaires souffrent généralement d'un même défaut : les cartes sont assez médiocres. L'échelle est absente, le réseau fluvial ou le réseau routier n'est pas représenté, le relief est illisible, tous les villages mentionnés ne sont pas visibles, les unités ne sont pas placés... L'idée de ce petit site est de présenter la campagne de France par les cartes, afin d'aider à la compréhension de cette surprenante campagne où malgré la forte infériorité numérique de son armée, Napoléon parvint à infliger de nombreux revers aux coalisés avant finalement de devoir abdiquer à Fontainebleau.
 
