@@ -22,12 +22,14 @@
 </head>
 <body>
     <header>
-        <h1>Carte de la campagne de France (Déc 1813 - Avril 1814)</h1>
-
-        <div class="faq-actions">
-            <a href="{% url 'carte:faq' %}">FAQ</a>
-            <a href="{% url 'carte:contact' %}">Contact</a>
+        <div class="header-content">
+            <h1>Carte de la campagne de France (Déc 1813 - Avril 1814)</h1>
+            <div class="faq-actions">
+                <a href="{% url 'carte:faq' %}">FAQ</a>
+                <a href="{% url 'carte:contact' %}">Contact</a>
+            </div>
         </div>
+        <button id="toggleControls" class="mobile-only-btn">⚙️ Filtres</button>
     </header>
 
     <main>
@@ -556,7 +558,43 @@
         btn.setAttribute('aria-expanded','true');
       }
     });
-    
+
+
+  // Sélection des éléments
+const toggleBtn = document.getElementById('toggleControls');
+const controlsPanel = document.querySelector('.controls');
+const headerElement = document.querySelector('header');
+
+function ajusterPositionMenu() {
+    // On ne fait le calcul que si on est en mode mobile
+    if (window.innerWidth <= 768) {
+        const headerHeight = headerElement.offsetHeight; // Mesure la hauteur réelle du bandeau
+        controlsPanel.style.top = headerHeight + "px";
+        controlsPanel.style.height = (window.innerHeight - headerHeight) + "px";
+    } else {
+        // Reset pour le mode ordinateur
+        controlsPanel.style.top = "";
+        controlsPanel.style.height = "";
+    }
+}
+
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        ajusterPositionMenu(); // On recalcule juste avant d'ouvrir au cas où
+        controlsPanel.classList.toggle('open');
+    });
+}
+
+// Recalculer si on tourne le téléphone ou si on redimensionne la fenêtre
+window.addEventListener('resize', ajusterPositionMenu);
+
+// Fermer le menu si on clique sur la carte
+document.getElementById('map').addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+        controlsPanel.classList.remove('open');
+    }
+});   
 
   </script>
 </html>
