@@ -426,6 +426,10 @@
         color: white;
     }
 
+    .une-colonnes {
+          width: 80% !important;           /* largeur totale du bloc */
+        }
+
     
 }
 
