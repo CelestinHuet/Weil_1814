@@ -35,6 +35,12 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+
+        positions = Position.objects.all()
+        logging.info(f"Nombre de positions : {len(positions)}")
+
+        positions_fiables = Position.objects.filter(date_approx=False,planifie=False)
+        logging.info(f"Nombre de positions fiables : {len(positions_fiables)}")
         
         qs = Position.objects.annotate(
             source_prefix=Substr(
@@ -45,8 +51,7 @@ class Command(BaseCommand):
         )
         sources = sorted(set(list(qs.values_list('source_prefix', flat=True))))
         print(sources)
-        
-        
+
         for source in sources:
             filtered = qs.filter(source_prefix=source,date_approx=False,planifie=False)
             filtered_total = qs.filter(source_prefix=source)
@@ -54,3 +59,8 @@ class Command(BaseCommand):
             filtered_planifie = qs.filter(source_prefix=source,planifie=True)
             logging.info(f"{source} : total : {len(filtered_total)}, date incertaine : {len(filtered_dates_incertaines)}, planifié : {len(filtered_planifie)}, fiable : {len(filtered)}")
             
+
+        unites = Unite.objects.all()
+        logging.info(f"Nombre d'unités : {len(unites)}")
+        generaux = [u for u in unites if u.is_general()]
+        logging.info(f"Nombre de généraux : {len(generaux)}")
