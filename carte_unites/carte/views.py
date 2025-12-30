@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with 181
 
 from django.shortcuts import render
 from django.views.generic import TemplateView
-from carte.models import Unite, Position, Combat
+from carte.models import Unite, Position, Combat, Lettre
 from django.http import JsonResponse
 from datetime import datetime
 import logging
@@ -143,6 +143,35 @@ def write_popup_combat(props):
     return popup
 
 
+def write_popup_lettre(props):
+
+    date = str(props["date"])
+
+    popup = f"""
+    <div class="map-popup" role="dialog" aria-label="Détails de l'unité">
+        <div class="map-popup__header">
+            <div class="map-popup__title">{props["expediteur"]} à {props["destinataire"]}</div>
+            <div class="map-popup__meta">
+            <time class="map-popup__date" datetime="2025-09-15">{date}</time>
+            <span class="map-popup__location">{props["lieu"]}</span>
+            </div>
+        </div>
+
+
+        <blockquote class="map-popup__quote map-popup__quote--collapsed" id="quote1">
+            <p>
+                {props["contenu"]} - ({props["source"]}).
+            </p>
+        </blockquote>
+
+        <button class="map-popup__toggle" aria-expanded="false" aria-controls="quote1">Lire la suite</button>
+
+
+    </div>
+    """
+    return popup
+
+
 
 def positions_par_date(request):
     date = request.GET.get('date')
@@ -237,6 +266,42 @@ def positions_par_date(request):
     for combat_feature in combats_features:
         combat_feature["properties"]["popup"] = write_popup_combat(combat_feature["properties"])
 
+    lettres_features = []
+    lieux_lettres = []
+    lettres = Lettre.objects.filter(date=date_dt, date__isnull=False)
+    lettres = sorted(lettres, key=lambda x : x.date)
+    for lettre in lettres:
+        if lettre.lieu is not None:
+
+            compte_pas = 0
+            for l in lieux_lettres:
+                if l==lettre.lieu:
+                    compte_pas += 1
+            
+            lettres_features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [lettre.lieu.longitude+compte_pas*pas, lettre.lieu.latitude - 2*pas]
+                    },
+                    
+                    "properties": {
+                        "expediteur":lettre.expediteur.nom,
+                        "destinataire":lettre.destinataire.nom,
+                        "date":lettre.date,
+                        "lieu":lettre.lieu.nom,
+                        "contenu":lettre.contenu,
+                        "source":lettre.source
+                    }
+                })
+            
+            lieux_lettres.append(lettre.lieu)
+
+            
+    for lettre_feature in lettres_features:
+        lettre_feature["properties"]["popup"] = write_popup_lettre(lettre_feature["properties"])
+
+
     return JsonResponse({
             "position":{
                 "type": "FeatureCollection",
@@ -245,6 +310,10 @@ def positions_par_date(request):
             "combats":{
                 "type": "FeatureCollection",
                 "features": combats_features
+            },
+            "lettres":{
+                "type": "FeatureCollection",
+                "features": lettres_features
             },
             "est_commande_par":[],
             "a_sous_ses_ordres":[]
@@ -336,6 +405,45 @@ def positions_par_unite(request):
                         feature["properties"]["justification"].append(combat.justification)
                         feature["properties"]["source"].append(combat.source)
 
+    lettres = []
+    for u in unites:
+        lettres += list(Lettre.objects.filter(expediteur=u, date__isnull=False))
+        lettres += list(Lettre.objects.filter(destinataire=u, date__isnull=False))
+
+    lettres = sorted(lettres, key=lambda x : x.date)
+
+    lettres_features = []
+    lieux_lettres = []
+    for lettre in lettres:
+        if lettre.lieu is not None:
+
+            compte_pas = 0
+            for l in lieux_lettres:
+                if l==lettre.lieu:
+                    compte_pas += 1
+            
+            lettres_features.append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [lettre.lieu.longitude+compte_pas*pas, lettre.lieu.latitude - 2*pas]
+                    },
+                    
+                    "properties": {
+                        "expediteur":lettre.expediteur.nom,
+                        "destinataire":lettre.destinataire.nom,
+                        "date":lettre.date,
+                        "lieu":lettre.lieu.nom,
+                        "contenu":lettre.contenu,
+                        "source":lettre.source
+                    }
+                })
+            lieux_lettres.append(lettre.lieu)
+
+            
+    for lettre_feature in lettres_features:
+        lettre_feature["properties"]["popup"] = write_popup_lettre(lettre_feature["properties"])
+
 
     for feature in features:
         props = feature["properties"]
@@ -358,6 +466,10 @@ def positions_par_unite(request):
             "combats":{
                 "type": "FeatureCollection",
                 "features": combats_features
+            },
+            "lettres":{
+                "type": "FeatureCollection",
+                "features": lettres_features
             },
             "est_commande_par":odb["est_commande_par"],
             "a_sous_ses_ordres":odb["a_sous_ses_ordres"]

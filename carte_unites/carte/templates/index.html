@@ -271,6 +271,10 @@ You should have received a copy of the GNU General Public License along with 181
       // On ajoute l'icône pour les combats
       image = await map.loadImage('/static/icons/lieu_combat.png');
       map.addImage('icone_combat', image.data);
+
+      // On ajoute l'icône pour les lettres
+      image = await map.loadImage('/static/icons/lettre.png');
+      map.addImage('icone_lettre', image.data);
       
       // Chargement des images, pas réussi à faire plus propre...
       image = await map.loadImage('/static/icons/inconnu_bleu.png');
@@ -340,6 +344,15 @@ You should have received a copy of the GNU General Public License along with 181
         }
       });
 
+      // On ajoute la couche des lettres
+      map.addSource('lettres', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+
       // Symboles points pour le placement des unités
       map.addLayer({
         id: 'unit-points',
@@ -387,6 +400,18 @@ You should have received a copy of the GNU General Public License along with 181
           }
       });
 
+      // Icones pour les lettres
+      map.addLayer({
+          id: 'lettres-layer',
+          type: 'symbol',
+          source: 'lettres',
+          layout: {
+            'icon-image': 'icone_lettre',
+            'icon-size': 0.05, // ajuste la taille
+            'icon-allow-overlap': true
+          }
+      });
+
       updateDataDate("1813-12-24");
       filter();
     });
@@ -411,7 +436,15 @@ You should have received a copy of the GNU General Public License along with 181
         .addTo(map);
     });
 
-    
+    // Pop-up sur les lettres
+    map.on('click', 'lettres-layer', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const props = e.features[0].properties;      
+      new maplibregl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(props.popup)
+        .addTo(map);
+    });
 
     // Ajout des courbes de niveau. Pas très utile à cette échelle...
     CarteFacile.addOverlay(map, CarteFacile.Overlay.levelCurves);
@@ -428,6 +461,7 @@ You should have received a copy of the GNU General Public License along with 181
             map.getSource('positions').setData(data["position"]);
             map.setLayoutProperty('unit-points', 'text-field', ['get', 'date']);
             map.getSource('combats').setData(data["combats"]);
+            map.getSource('lettres').setData(data["lettres"]);
             
             document.getElementById('titre_odb').style.display = "block";
             const ul = document.getElementById("commande");
@@ -475,6 +509,7 @@ You should have received a copy of the GNU General Public License along with 181
           map.getSource('positions').setData(data["position"]);
           map.setLayoutProperty('unit-points', 'text-field', ['get', 'unite']);
           map.getSource('combats').setData(data["combats"]);
+          map.getSource('lettres').setData(data["lettres"]);
           document.getElementById('titre_odb').style.display = "none";
         }
       })

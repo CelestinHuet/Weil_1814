@@ -161,4 +161,25 @@ class Combat(models.Model):
 
 
 
+class Lettre(models.Model):
+    expediteur = models.ForeignKey(Unite, on_delete=models.CASCADE, blank=True, null=True, related_name="expediteur")
+    destinataire = models.ForeignKey(Unite, on_delete=models.CASCADE, blank=True, null=True, related_name="destinataire")
+    date = models.DateField(blank=True, null=True)
+    lieu = models.ForeignKey(Lieu, on_delete=models.CASCADE, blank=True, null=True)
+    contenu = models.TextField(blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True)
 
+    def __str__(self):
+        if self.expediteur is None:
+            expediteur = "None"
+        else:
+            expediteur = self.expediteur.nom
+        if self.destinataire is None:
+            destinataire = "None"
+        else:
+            destinataire = self.destinataire.nom
+        if self.lieu is None:
+            lieu = "None"
+        else:
+            lieu = self.lieu.nom
+        return f"De {expediteur} à {destinataire}, à {lieu} le {self.date}"

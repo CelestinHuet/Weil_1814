@@ -155,7 +155,7 @@ class Command(BaseCommand):
                     position_dict["planifie"]=True
                 # On crée la position
 
-                source = f"{file.replace("-", " p.").replace(".json", "")}_ {position_dict["page"]}"
+                source = f"{file.replace("-", " p.").replace(".json", "")}_{position_dict["page"]}"
                 position = Position.objects.create(
                     lieu_str=position_lieu,
                     date=date_position,

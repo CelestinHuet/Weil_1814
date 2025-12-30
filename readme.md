@@ -60,6 +60,11 @@ python merge_geolocalisation.py
 python geolocalisation.py
 ```
 
+Extraire les lettres
+```
+python extract_letter_information.py
+```
+
 Insérer les lieux dans la base de données
 ```
 cd carte_unites
@@ -98,6 +103,11 @@ Associe à chaque unité un échelon (armée, corps, division, brigade...)
 python manage.py associate_unite_echelon
 ```
 
+Insérer les lettres
+```
+python manage.py insert_lettres --directory ../lettres
+```
+
 Pour réinitialiser la base de données
 ```
 python manage.py flush
@@ -116,6 +126,7 @@ python manage.py associate_combat_lieux
 python manage.py controle_localisation
 python manage.py associate_unite_echelon
 python manage.py associate_unite_camp
+python manage.py insert_lettres --directory ../lettres
 ```
 
 

@@ -43,7 +43,7 @@ appariements = [
     ["Saint-Amand","Saint-Amand-sur-Fion"],
     ["Semilly","Semilly-sous-Laon"],
     ["Maisons-Blanches","Buchères"],
-    ["Surville","Montereau-Fault-Yonne"],
+    ["Surville","Montereau-Fault-Yonne", "Fossard"],
     ["Varennes","Varennes-le-Grand"],
     ["Boulancourt","Longeville-sur-la-Laisnes"],
     ["Vitry","Vitry-le-François"],
@@ -53,7 +53,28 @@ appariements = [
     ["Mont-Louis","Charonne"],
     ["Corbeil","Corbeil-Essonnes"],
     ["Marchais", "Marchais-en-Brie"],
-    ["Vandoeuvres", "Vendeuvre-sur-Barse"]
+    ["Vandoeuvres", "Vendeuvre-sur-Barse"],
+    ["Bastide", "La Bastide", "La Bastide-Clairence"],
+    ["Mandres", "Mandres-aux-Quatre-Tours"],
+    ["Echelles", "Les Echelles"],
+    ["Mézières", "Charleville-Mézières"],
+    ["La Guillotière", "Courterange"],
+    ["Plaisance", "Piacenza"],
+    ["Haute-Epine", "La Haute-Epine"],
+    ["Le Châtelet", "Le Châtelet-en-Brie", "Chatelet"],
+    ["Les Ormes", "Les Ormes-sur-Voulzie"],
+    ["Limoges", "Limoges-Fourches"],
+    ["Laval", "Laval-en-Brie"],
+    ["Valence", "Valence-en-Brie"],
+    ["Orvilliers", "Orvilliers-Saint-Julien"],
+    ["Montis", "Moutils"],
+    ["Trêmes", "Le Gué-à-Tresmes"],
+    ["Pont-Saint-Hubert", "Pont-Sainte-Marie"],
+    ["St.-Luc", "La Chapelle-Saint-Luc"],
+    ["Ardon", "Ardon-sous-Laon"],
+    ["Athies", "Athies-sous-Laon", "La Mouillée"],
+    ["Fontenay", "Fontenay-de-Bosseries"],
+    ["Belleville", "Belleville-en-Beaujolais"]
 ]
 
 

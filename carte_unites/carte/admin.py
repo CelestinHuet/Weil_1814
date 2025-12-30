@@ -10,18 +10,22 @@ You should have received a copy of the GNU General Public License along with 181
 
 
 from django.contrib import admin
-from .models import Lieu, Position, Unite, Subordonne, Commande, Combat
+from .models import Lieu, Position, Unite, Subordonne, Commande, Combat, Lettre
 
 admin.site.register(Lieu)
 admin.site.register(Position)
 admin.site.register(Combat)
 
 
-
 @admin.register(Unite)
 class UniteAdmin(admin.ModelAdmin):
     search_fields = ('nom',)
     ordering = ('nom',)
+
+@admin.register(Lettre)
+class LettreAdmin(admin.ModelAdmin):
+    search_fields = ('expediteur__nom','destinataire__nom','date')
+    ordering = ('date',)
 
 
 @admin.register(Subordonne)
