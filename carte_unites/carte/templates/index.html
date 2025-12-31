@@ -75,6 +75,18 @@ You should have received a copy of the GNU General Public License along with 181
                         Masquer les dates approximatives
                     </label>
                 </div>
+
+                <div class="controlsderoulement">
+                    <button id="playBtn">Lecture</button>
+                    <button id="pauseBtn">Pause</button>
+
+                    <div>
+                      <label for="speedRange">Vitesse :</label>
+                      <input type="range" id="speedRange" min="5000" max="20000" step="1000" value="10000">
+                      <span id="speedValue">10s / jour</span>
+                    </div>
+                </div>
+
                 <div id="titre_odb">
                   <label>A sous ses ordres : </label>
                   <ul id="commande"></ul>
@@ -99,6 +111,16 @@ You should have received a copy of the GNU General Public License along with 181
   <script>
 
     document.getElementById('titre_odb').style.display = "none";
+
+
+    // Pour le déroulement automatique
+    let playbackInterval = null;
+    let currentSpeed = 10000; // 1 seconde par jour par défaut
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const speedRange = document.getElementById('speedRange');
+    const speedValueDisplay = document.getElementById('speedValue');
+    const dateLimite = new Date(1814, 4, 1);
 
     // Ajout des deux couches Cassini et Etat-major
     const layer_cassini_etat_major = [ 
@@ -587,6 +609,10 @@ You should have received a copy of the GNU General Public License along with 181
       if (input.value) {
           const currentDate = new Date(input.value);
           currentDate.setDate(currentDate.getDate() + 1); // ajoute 1 jour
+          if (currentDate > dateLimite) {
+              stopPlayback(); // On appelle la fonction d'arrêt
+              return;
+          }
           input.value = currentDate.toISOString().split('T')[0]; // format YYYY-MM-DD
       } else {
           // Si aucune date sélectionnée, mettre aujourd’hui + 1
@@ -623,42 +649,72 @@ You should have received a copy of the GNU General Public License along with 181
     });
 
 
-  // Sélection des éléments
-const toggleBtn = document.getElementById('toggleControls');
-const controlsPanel = document.querySelector('.controls');
-const headerElement = document.querySelector('header');
+    // Sélection des éléments
+    const toggleBtn = document.getElementById('toggleControls');
+    const controlsPanel = document.querySelector('.controls');
+    const headerElement = document.querySelector('header');
 
-function ajusterPositionMenu() {
-    // On applique le calcul si largeur < 768px OU hauteur < 500px
-    if (window.innerWidth <= 768 || window.innerHeight <= 500) {
-        const headerHeight = headerElement.offsetHeight;
-        controlsPanel.style.top = headerHeight + "px";
-        controlsPanel.style.height = (window.innerHeight - headerHeight) + "px";
-    } else {
-        // Reset pour le mode ordinateur standard
-        controlsPanel.style.top = "";
-        controlsPanel.style.height = "";
-        controlsPanel.classList.remove('open');
+    function ajusterPositionMenu() {
+        // On applique le calcul si largeur < 768px OU hauteur < 500px
+        if (window.innerWidth <= 768 || window.innerHeight <= 500) {
+            const headerHeight = headerElement.offsetHeight;
+            controlsPanel.style.top = headerHeight + "px";
+            controlsPanel.style.height = (window.innerHeight - headerHeight) + "px";
+        } else {
+            // Reset pour le mode ordinateur standard
+            controlsPanel.style.top = "";
+            controlsPanel.style.height = "";
+            controlsPanel.classList.remove('open');
+        }
     }
-}
 
-if (toggleBtn) {
-    toggleBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        ajusterPositionMenu(); // On recalcule juste avant d'ouvrir au cas où
-        controlsPanel.classList.toggle('open');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            ajusterPositionMenu(); // On recalcule juste avant d'ouvrir au cas où
+            controlsPanel.classList.toggle('open');
+        });
+    }
+
+    // Recalculer si on tourne le téléphone ou si on redimensionne la fenêtre
+    window.addEventListener('resize', ajusterPositionMenu);
+
+    // Fermer le menu si on clique sur la carte
+    document.getElementById('map').addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            controlsPanel.classList.remove('open');
+        }
+    });   
+
+
+    // Déroulement automatque des journées
+    function startPlayback() {
+        if (playbackInterval) return; // Évite les doublons
+        playbackInterval = setInterval(incrementDate, currentSpeed);
+        playBtn.disabled = true;
+    }
+
+    function stopPlayback() {
+        clearInterval(playbackInterval);
+        playbackInterval = null;
+        playBtn.disabled = false;
+    }
+
+    // Mise à jour de la vitesse en temps réel
+    speedRange.addEventListener('input', (e) => {
+        // Inverser la valeur car un délai plus court = une vitesse plus rapide
+        currentSpeed = e.target.value; 
+        const seconds = (currentSpeed / 1000).toFixed(0);
+        speedValueDisplay.textContent = `${seconds}s / jour`;
+        
+        if (playbackInterval) {
+            stopPlayback();
+            startPlayback();
+        }
     });
-}
 
-// Recalculer si on tourne le téléphone ou si on redimensionne la fenêtre
-window.addEventListener('resize', ajusterPositionMenu);
-
-// Fermer le menu si on clique sur la carte
-document.getElementById('map').addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-        controlsPanel.classList.remove('open');
-    }
-});   
+    playBtn.addEventListener('click', startPlayback);
+    pauseBtn.addEventListener('click', stopPlayback);
 
   </script>
 </html>
