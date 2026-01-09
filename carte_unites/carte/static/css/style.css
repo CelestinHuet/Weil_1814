@@ -89,8 +89,31 @@
             transition: background-color 0.3s ease;
         }
 
+        
         button:hover {
             color: #374151;
+        }
+
+        /* On réinitialise les styles gênants et on applique le style Géoportail */
+        #map-selector-btn {
+          all: unset; /* Optionnel : réinitialise TOUT le style hérité */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          background-color: white;
+          border-radius: 4px;
+          cursor: pointer;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        #map-selector-btn svg {
+          stroke: #001f3f; /* Couleur des traits du SVG */
+        }
+
+        #map-selector-btn:hover {
+          background-color: #f0f0f0;
         }
 
         .view-options label {

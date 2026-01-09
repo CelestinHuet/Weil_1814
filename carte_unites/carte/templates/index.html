@@ -212,8 +212,15 @@ You should have received a copy of the GNU General Public License along with 181
 
         // Bouton d'icône
         const button = document.createElement('button');
+        button.id = 'map-selector-btn';
         button.type = 'button';
-        button.innerHTML = '🗺️'; // tu peux remplacer par une icône SVG
+        button.innerHTML = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M2 17L12 22L22 17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M2 12L12 17L22 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
         button.title = 'Choisir un fond de plan';
         button.addEventListener('click', () => {
           form.classList.toggle('hidden');
