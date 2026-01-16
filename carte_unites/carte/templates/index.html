@@ -448,34 +448,75 @@ You should have received a copy of the GNU General Public License along with 181
       filter();
     });
 
-    // Pop-up sur les positions
-    map.on('click', 'unit-points', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const props = e.features[0].properties;      
-      new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(props.popup)
-        .addTo(map);
+    const popup = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 10 // Un petit décalage pour laisser de l'espace
     });
 
-    // Pop-up sur les batailles
-    map.on('click', 'batailles-layer', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const props = e.features[0].properties;      
-      new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(props.popup)
-        .addTo(map);
+    let popupTimer;
+
+    // Fonction pour fermer la popup avec un léger délai
+    const closePopup = () => {
+        popupTimer = setTimeout(() => {
+            popup.remove();
+        }, 100); // 100ms de battement
+    };
+
+    function updatePopup(e) {
+
+        clearTimeout(popupTimer);
+
+        map.getCanvas().style.cursor = 'pointer';
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const props = e.features[0].properties;
+
+        popup.setLngLat(coordinates)
+            .setHTML(props.popup)
+            .addTo(map);
+
+        // ÉCOUTER LES ÉVÉNEMENTS SUR LA POPUP ELLE-MÊME
+        const popupElement = popup.getElement();
+        
+        popupElement.addEventListener('mouseenter', () => {
+            // La souris est sur la popup : on ne ferme plus !
+            clearTimeout(popupTimer);
+        });
+
+        popupElement.addEventListener('mouseleave', () => {
+            // La souris quitte la popup : on peut fermer
+            closePopup();
+        });
+    }
+
+    map.on('mouseenter', 'unit-points', (e) => {
+        // Si un chrono de fermeture est en cours, on l'annule
+        updatePopup(e);
     });
 
-    // Pop-up sur les lettres
-    map.on('click', 'lettres-layer', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const props = e.features[0].properties;      
-      new maplibregl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(props.popup)
-        .addTo(map);
+    map.on('mouseleave', 'unit-points', () => {
+        map.getCanvas().style.cursor = '';
+        closePopup();
+    });
+
+    map.on('mouseenter', 'batailles-layer', (e) => {
+        // Si un chrono de fermeture est en cours, on l'annule
+        updatePopup(e);
+    });
+
+    map.on('mouseleave', 'batailles-layer', () => {
+        map.getCanvas().style.cursor = '';
+        closePopup();
+    });
+
+    map.on('mouseenter', 'lettres-layer', (e) => {
+        // Si un chrono de fermeture est en cours, on l'annule
+        updatePopup(e);
+    });
+
+    map.on('mouseleave', 'lettres-layer', () => {
+        map.getCanvas().style.cursor = '';
+        closePopup();
     });
 
     // Ajout des courbes de niveau. Pas très utile à cette échelle...
