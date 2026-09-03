@@ -504,4 +504,5 @@ def contact_view(request):
 
 
 def faq_view(request):
+    logger.info("Consultation de la page FAQ")
     return render(request, "FAQ.html")
